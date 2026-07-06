@@ -1184,3 +1184,81 @@ nl -ba README.md | sed -n '1,90p'
 - Reason: Append commands 104 through 126 and tool operations 113 through 116 to this command log.
 - Expected affected paths: `COMMAND_LOG_mild_site.md`.
 - Exit status: success.
+
+### Commands 128-141
+
+- Timestamp: 2026-07-06, after user reported GitHub Pages build/deploy failure
+- Alias: nova
+- CWD: `/home/zjj` or `/media/zjj/Elements/CQU_ZJJ/MILD` as listed in each command.
+- Reason: Diagnose the pushed GitHub Pages deployment failure without modifying robot/data/replay pipelines.
+- Safety scope: Read-only local and network diagnostics, except this command-log append. No `git pull`, `git fetch`, `git clone`, Docker replay, robot control, data collection, or critical pipeline script edit.
+- Exit status:
+  - `team_deep_preflight.sh nova`: success; output was long and partly truncated in the terminal.
+  - `git status --short`: success and clean before command-log append.
+  - `git remote -v`, branch, and latest commit inspection: success.
+  - local file/workflow inspection: success; no `.github` workflow files found.
+  - `gh --version` and `gh auth status`: failed with exit 127 because GitHub CLI is not installed.
+  - unauthenticated GitHub REST API pages query: failed due public API rate limit.
+  - one Python parsing command for Actions REST API had a quoting SyntaxError and produced no useful evidence.
+  - `curl -I` for the live site and targeted live-content checks: success.
+  - local asset-size checks: success.
+- Commands:
+
+```bash
+/home/zjj/.cache/agibot/live_shared_memory/team_deep_preflight.sh nova
+sed -n '1,220p' /home/zjj/.cache/agibot/live_shared_memory/CODE_DELIVERY_RULES.md
+sed -n '1,220p' /home/zjj/.cache/agibot/live_shared_memory/COMMAND_LOG_RULES.md
+git status --short
+git remote -v
+git branch --show-current
+git log -1 --oneline --decorate --stat
+find . -maxdepth 3 -type f | sort
+find .github -maxdepth 4 -type f -print 2>/dev/null | sort
+ls -la
+gh --version
+gh auth status
+curl -sS https://api.github.com/repos/Zjj587/MILD/pages | python3 -m json.tool | sed -n '1,220p'
+curl -sS 'https://api.github.com/repos/Zjj587/MILD/actions/runs?per_page=10' | python3 -c "import sys,json; data=json.load(sys.stdin); print('total_count', data.get('total_count'));\nfor r in data.get('workflow_runs', [])[:10]:\n print(r.get('id'), r.get('name'), r.get('event'), r.get('status'), r.get('conclusion'), r.get('head_branch'), r.get('head_sha', '')[:7], r.get('created_at'), r.get('html_url'))"
+curl -sSI https://zjj587.github.io/MILD/ | sed -n '1,80p'
+find static/images -type f -printf '%s %p\n' | sort -nr | sed -n '1,30p'
+du -sh . static static/images static/images/tasks 2>/dev/null
+curl -sSL https://zjj587.github.io/MILD/ | rg -n "Sensor Suite|calibration_insight9|Data Links|TAG systems|fiducial marker families"
+git show -s --format='commit %h%nAuthorDate %aI%nCommitDate %cI%nSubject %s' HEAD
+curl -sSL https://zjj587.github.io/MILD/static/js/site.js | sed -n '1,150p'
+curl -sSI https://zjj587.github.io/MILD/static/images/tasks/task-14-box-organize.png | sed -n '1,80p'
+```
+
+- Web evidence inspected:
+  - GitHub Actions run page for `pages-build-deployment #8` at commit `f53373c`: status failure, build and report-build-status jobs completed, deploy job annotated `Deployment failed, try again later`, artifact `github-pages` size 27.1 MB.
+  - GitHub Actions run page for `pages-build-deployment #7` at commit `95ed179`: status success, same `github-pages` artifact size 27.1 MB.
+- Evidence:
+  - The latest local and remote commit is `f53373c` on `main`/`origin/main`.
+  - Live site is still serving older content from the successful #7 deployment: the live HTML contains `fiducial marker families`, and the live JS lacks the generated task download-link code.
+  - The failure is a GitHub Pages deploy-stage failure, not a local static-site syntax/build failure.
+
+### Commands 142-144
+
+- Timestamp: 2026-07-06, after appending deployment-failure diagnostics
+- Alias: nova
+- CWD: `/media/zjj/Elements/CQU_ZJJ/MILD`
+- Reason: Verify that the diagnostic command-log append itself is clean and inspect final local state.
+- Exit status:
+  - `git diff --check`: success.
+  - `git status --short`: success; only `COMMAND_LOG_mild_site.md` is modified locally.
+  - `git diff --stat`: success; command log gained 51 lines.
+- Commands:
+
+```bash
+git diff --check
+git status --short
+git diff --stat
+```
+
+### Tool Operation 145
+
+- Timestamp: 2026-07-06, final command-log update
+- Alias: nova
+- Tool: `apply_patch`
+- Reason: Append commands 142 through 144 to this command log.
+- Expected affected paths: `COMMAND_LOG_mild_site.md`.
+- Exit status: success.
