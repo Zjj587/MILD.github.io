@@ -1082,3 +1082,105 @@ find static/images/tasks -maxdepth 1 -type f | sort | wc -l
 - Reason: Append final checks 99 through 102 to this command log.
 - Expected affected paths: `COMMAND_LOG_mild_site.md`.
 - Exit status: success.
+
+### Commands 104-112
+
+- Timestamp: 2026-07-06, before sensor/download website update
+- Alias: nova
+- CWD: `/home/zjj` or `/media/zjj/Elements/CQU_ZJJ/MILD` as listed in each command.
+- Reason: Refresh team memory, reread delivery/logging rules, inspect the current website implementation, and locate local sensor calibration evidence before editing only the public website repository.
+- Safety scope: Read-only inspection commands only; no Docker replay, robot control, data collection, critical pipeline script edit, or dataset write command.
+- Exit status:
+  - `team_deep_preflight.sh nova`: success; output was long and partly truncated in the terminal.
+  - rule/file inspection commands: success.
+  - MILD-local sensor text search: success.
+  - UMID/CQU sensor calibration searches: success, with long output truncated by the terminal.
+  - one broad `find ... CQU_ZJJ ...` search initially yielded a running session and then completed successfully after polling.
+- Commands:
+
+```bash
+/home/zjj/.cache/agibot/live_shared_memory/team_deep_preflight.sh nova
+sed -n '1,240p' /home/zjj/.cache/agibot/live_shared_memory/CODE_DELIVERY_RULES.md
+sed -n '1,240p' /home/zjj/.cache/agibot/live_shared_memory/COMMAND_LOG_RULES.md
+sed -n '1,220p' /media/zjj/Elements/CQU_ZJJ/MILD/COMMAND_LOG_mild_site.md
+git status --short
+sed -n '1,260p' index.html
+sed -n '261,620p' index.html
+sed -n '1,320p' static/css/site.css
+sed -n '321,760p' static/css/site.css
+sed -n '760,940p' static/css/site.css
+sed -n '1,260p' static/js/site.js
+sed -n '1,220p' README.md
+tail -n 120 COMMAND_LOG_mild_site.md
+rg -n "insight9|instan|insta|x5|intrinsic|extrinsic|calib|calibration|camera" . --glob '!.git/**'
+find /media/zjj/Elements/CQU_ZJJ/UMID -maxdepth 5 -type f | rg -i "(insight9|instan|insta|x5|intrin|extrin|calib|camera|yaml|json|txt)$|calib|intrinsic|extrinsic"
+find /media/zjj/Elements/CQU_ZJJ -maxdepth 4 -type f | rg -i "(insight9|instan|insta|x5).*(yaml|json|txt|md|csv)$|calib|intrinsic|extrinsic"
+find /media/zjj/Elements/CQU_ZJJ/insight9 -maxdepth 5 -type f | rg -i "(yaml|yml|json|txt|md)$|intrin|extrin|calib|camera|imu|viewer|logger"
+sed -n '1,160p' /media/zjj/Elements/CQU_ZJJ/UMID/instan360_he.yaml
+sed -n '1,120p' /media/zjj/Elements/CQU_ZJJ/UMID/instan360_cam01.yaml
+sed -n '1,120p' /media/zjj/Elements/CQU_ZJJ/UMID/instan360_imu.yaml
+```
+
+- Evidence:
+  - Local X5 calibration evidence exists under UMID, including `instan360_cam01.yaml`, `instan360_imu.yaml`, and `instan360_he.yaml`.
+  - Local Insight9 calibration/record evidence exists under `insight9/yaml/` and `insight9/imu_calib_runs/`, including camera info YAMLs and IMU calibration artifacts.
+  - Website repository had no in-repo public calibration assets before this edit, so page links were implemented as planned GitHub Release URLs instead of private local file paths.
+
+### Tool Operations 113-116
+
+- Timestamp: 2026-07-06, during sensor/download website update
+- Alias: nova
+- Tool: `apply_patch`
+- Reason:
+  - Add the `Sensors` navigation item and a `Sensor Suite` section with Insta360 X5 and Insight9 calibration download links.
+  - Update the Release Layout text to show calibration files and separate task bundles for original, ArUco 1-4 tag, and AprilTag 1-4 tag data.
+  - Add responsive CSS for sensor cards and task download groups.
+  - Add JavaScript that replaces each task card's pending dataset link with generated release links based on task number and marker count.
+  - Update README release notes with calibration asset and task bundle naming rules.
+  - Correct the overview metric label from fiducial marker families to TAG systems.
+- Expected affected paths: `index.html`, `static/css/site.css`, `static/js/site.js`, `README.md`.
+- Exit status: success.
+
+### Commands 117-126
+
+- Timestamp: 2026-07-06, after sensor/download website update
+- Alias: nova
+- CWD: `/media/zjj/Elements/CQU_ZJJ/MILD`
+- Reason: Verify the updated static website and inspect the exact delivered changes.
+- Exit status:
+  - `git diff --check`: success.
+  - `node --check static/js/site.js`: success.
+  - private absolute path scan: no matches; `rg` returned 1 because no matches were found.
+  - static reference check: success; 17 refs checked and no missing files.
+  - `git diff --stat`: success.
+  - `git status --short`: success.
+  - targeted diff and line inspections: success.
+- Commands:
+
+```bash
+git diff --check
+node --check static/js/site.js
+rg -n "/home/zjj|/media/zjj|/mnt/|Elements|新加卷" index.html README.md static
+python3 -c "from pathlib import Path; import re; missing=[]; html=Path('index.html').read_text(); css=Path('static/css/site.css').read_text(); refs=re.findall(r'(?:src|href)=\"(static/[^\"]+)\"', html)+re.findall(r'content=\"(static/[^\"]+)\"', html); css_refs=[str((Path('static/css')/m).resolve().relative_to(Path.cwd())) for m in re.findall(r'url\(\"([^\"]+)\"\)', css)]; all_refs=sorted(set(refs+css_refs)); missing=[r for r in all_refs if not Path(r).exists()]; print('checked refs:', len(all_refs)); print('missing:', missing); raise SystemExit(1 if missing else 0)"
+git diff --stat
+git status --short
+git diff -- index.html static/js/site.js static/css/site.css README.md
+nl -ba index.html | sed -n '24,190p'
+nl -ba index.html | sed -n '430,520p'
+nl -ba static/js/site.js | sed -n '1,180p'
+nl -ba README.md | sed -n '1,90p'
+```
+
+- Evidence:
+  - The new `Sensor Suite` section is in `index.html`.
+  - Task download links are generated in `static/js/site.js` with one original link, four ArUco tag-count links, and four AprilTag tag-count links per task.
+  - No private absolute paths were introduced into public website files.
+
+### Tool Operation 127
+
+- Timestamp: 2026-07-06, final command-log update
+- Alias: nova
+- Tool: `apply_patch`
+- Reason: Append commands 104 through 126 and tool operations 113 through 116 to this command log.
+- Expected affected paths: `COMMAND_LOG_mild_site.md`.
+- Exit status: success.

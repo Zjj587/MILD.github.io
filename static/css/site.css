@@ -305,6 +305,119 @@ h2 {
   color: var(--muted);
 }
 
+.sensor-section {
+  background: #f6f2e9;
+}
+
+.sensor-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.sensor-card {
+  display: grid;
+  gap: 16px;
+  min-height: 360px;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--white);
+  box-shadow: 0 1px 0 rgba(24, 33, 43, 0.04);
+}
+
+.sensor-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  text-transform: uppercase;
+}
+
+.sensor-topline span {
+  display: inline-grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  color: var(--white);
+  background: var(--blue);
+  border-radius: 8px;
+  font-weight: 850;
+}
+
+.sensor-topline strong {
+  text-align: right;
+}
+
+.sensor-card h3 {
+  margin: 0;
+  font-size: 1.42rem;
+  line-height: 1.18;
+}
+
+.sensor-card p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.sensor-card dl {
+  display: grid;
+  grid-template-columns: 78px 1fr;
+  gap: 8px 12px;
+  margin: 0;
+  color: var(--muted);
+}
+
+.sensor-card dt {
+  color: var(--ink);
+  font-weight: 820;
+}
+
+.sensor-card dd {
+  margin: 0;
+}
+
+.sensor-downloads {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-self: end;
+}
+
+.sensor-downloads a,
+.download-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 7px 10px;
+  color: var(--teal-dark);
+  border: 1px solid #9dcac1;
+  border-radius: 8px;
+  background: #e3f3ef;
+  font-size: 0.84rem;
+  font-weight: 820;
+}
+
+.sensor-downloads a:hover,
+.sensor-downloads a:focus-visible,
+.download-pill:hover,
+.download-pill:focus-visible {
+  color: var(--white);
+  background: var(--teal);
+  border-color: var(--teal);
+  outline: none;
+}
+
+.download-note {
+  max-width: 860px;
+  margin: 18px 0 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
 .variant-section {
   background: var(--white);
 }
@@ -660,6 +773,57 @@ h2 {
   cursor: not-allowed;
 }
 
+.task-downloads {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #f8faf7;
+}
+
+.download-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.download-heading span {
+  font-weight: 850;
+}
+
+.download-heading small {
+  color: var(--muted);
+  font-weight: 720;
+}
+
+.download-row {
+  display: grid;
+  grid-template-columns: 76px 1fr;
+  gap: 8px;
+  align-items: start;
+}
+
+.download-row > span {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 820;
+  line-height: 1.2;
+}
+
+.download-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.download-pill {
+  min-height: 30px;
+  padding: 5px 8px;
+  font-size: 0.78rem;
+}
+
 .release-band {
   background: var(--white);
 }
@@ -727,6 +891,7 @@ code {
 
   .metric-strip,
   .feature-grid,
+  .sensor-grid,
   .variant-grid,
   .task-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -775,6 +940,7 @@ code {
 
   .metric-strip,
   .feature-grid,
+  .sensor-grid,
   .variant-grid,
   .task-grid {
     grid-template-columns: 1fr;
@@ -790,6 +956,11 @@ code {
   }
 
   .task-card dl {
+    grid-template-columns: 1fr;
+  }
+
+  .sensor-card dl,
+  .download-row {
     grid-template-columns: 1fr;
   }
 

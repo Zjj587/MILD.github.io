@@ -32,6 +32,7 @@
       <nav class="site-nav" aria-label="Primary navigation">
         <a href="#overview">Overview</a>
         <a href="#benchmark">Benchmark</a>
+        <a href="#sensors">Sensors</a>
         <a href="#sequences">Sequences</a>
         <a href="#tasks">Tasks</a>
         <a href="#release">Release</a>
@@ -73,7 +74,7 @@
             </div>
             <div class="metric">
               <span class="metric-value">2</span>
-              <span class="metric-label">fiducial marker families</span>
+              <span class="metric-label">TAG systems</span>
             </div>
             <div class="metric">
               <span class="metric-value">Many</span>
@@ -127,6 +128,56 @@
               <p>Each scene maps to multiple sequence bundles: original data, ArUco layouts, AprilTag layouts, and appearance variants.</p>
             </article>
           </div>
+        </div>
+      </section>
+
+      <section class="section sensor-section" id="sensors">
+        <div class="section-inner">
+          <div class="section-heading">
+            <p class="section-kicker">Sensor Suite</p>
+            <h2>Calibration downloads are separated from task sequences.</h2>
+          </div>
+          <div class="sensor-grid" aria-label="Included camera sensors">
+            <article class="sensor-card">
+              <div class="sensor-topline"><span>X5</span><strong>Wide-FOV VIO stream</strong></div>
+              <h3>Insta360 X5</h3>
+              <p>
+                Wearable or handheld camera stream for manipulation-centered visual-inertial
+                localization sequences.
+              </p>
+              <dl>
+                <dt>Signals</dt><dd>Dual fisheye video, IMU, timestamps, and exposure metadata.</dd>
+                <dt>Release</dt><dd>Intrinsics, camera-IMU extrinsics, and hand-eye extrinsics.</dd>
+              </dl>
+              <div class="sensor-downloads" aria-label="Insta360 X5 calibration downloads">
+                <a href="https://github.com/Zjj587/MILD/releases/download/v0.1/calibration_insta360_x5_intrinsics.zip">Intrinsics</a>
+                <a href="https://github.com/Zjj587/MILD/releases/download/v0.1/calibration_insta360_x5_extrinsics.zip">Extrinsics</a>
+                <a href="https://github.com/Zjj587/MILD/releases/download/v0.1/calibration_insta360_x5_manifest.json">Manifest</a>
+              </div>
+            </article>
+
+            <article class="sensor-card">
+              <div class="sensor-topline"><span>I9</span><strong>Companion camera stream</strong></div>
+              <h3>Insight9</h3>
+              <p>
+                Companion camera source for sensor comparison, synchronized capture, and calibration
+                release alongside the manipulation task data.
+              </p>
+              <dl>
+                <dt>Signals</dt><dd>Color, depth or infrared camera records, IMU, VIO, and device timestamps.</dd>
+                <dt>Release</dt><dd>Camera intrinsics, static transforms, IMU parameters, and VIO metadata.</dd>
+              </dl>
+              <div class="sensor-downloads" aria-label="Insight9 calibration downloads">
+                <a href="https://github.com/Zjj587/MILD/releases/download/v0.1/calibration_insight9_intrinsics.zip">Intrinsics</a>
+                <a href="https://github.com/Zjj587/MILD/releases/download/v0.1/calibration_insight9_extrinsics.zip">Extrinsics</a>
+                <a href="https://github.com/Zjj587/MILD/releases/download/v0.1/calibration_insight9_manifest.json">Manifest</a>
+              </div>
+            </article>
+          </div>
+          <p class="download-note">
+            Calibration links use the planned public release filenames. The files should be uploaded
+            as GitHub Release assets after the final calibration owner review.
+          </p>
         </div>
       </section>
 
@@ -490,11 +541,16 @@
             </div>
             <div class="release-content">
               <p>
-                The public release area is ready for stable dataset links. Replace each pending
-                link in the task cards after the data packages are uploaded, and expose the
-                sequence manifest for every scene bundle.
+                The public release area is ready for stable dataset links. Each task card exposes
+                the original sequence plus separate ArUco and AprilTag bundles by marker count, so
+                a four-tag condition has its own download link instead of being mixed into one file.
               </p>
               <pre><code>dataset/
+  calibration/
+    calibration_insta360_x5_intrinsics.zip
+    calibration_insta360_x5_extrinsics.zip
+    calibration_insight9_intrinsics.zip
+    calibration_insight9_extrinsics.zip
   task_01_overhead_wave/
     preview.jpg
     metadata.json
@@ -505,7 +561,13 @@
     sequences/
       orin/
       aruco_1tag/
-      apriltag_36h11_4tag/
+      aruco_2tag/
+      aruco_3tag/
+      aruco_4tag/
+      apriltag_1tag/
+      apriltag_2tag/
+      apriltag_3tag/
+      apriltag_4tag/
       tablecloth_variant_01/</code></pre>
             </div>
           </div>
