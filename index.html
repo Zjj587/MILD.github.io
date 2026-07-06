@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MILD | Manipulation Interface Localization Dataset</title>
+    <meta
+      name="description"
+      content="MILD is a benchmark website for visual-inertial localization in Universal Manipulation Interface style robot teaching tasks."
+    >
+    <meta
+      name="keywords"
+      content="MILD, UMI, dataset, benchmark, visual-inertial localization, robot manipulation, robot teaching"
+    >
+    <meta name="theme-color" content="#0f766e">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="MILD: Manipulation Interface Localization Dataset">
+    <meta
+      property="og:description"
+      content="A benchmark for visual-inertial localization in Universal Manipulation Interface style manipulation tasks."
+    >
+    <meta property="og:image" content="static/images/hero-mild-concept.png">
+    <link rel="preload" href="static/images/hero-mild-concept.png" as="image">
+    <link rel="stylesheet" href="static/css/site.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="MILD home">
+        <span class="brand-mark">M</span>
+        <span class="brand-text">MILD</span>
+      </a>
+      <nav class="site-nav" aria-label="Primary navigation">
+        <a href="#overview">Overview</a>
+        <a href="#benchmark">Benchmark</a>
+        <a href="#tasks">Tasks</a>
+        <a href="#release">Release</a>
+        <a href="#citation">Citation</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-label="MILD introduction">
+        <div class="hero-bg" aria-hidden="true"></div>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+          <p class="eyebrow">Universal Manipulation Interface Localization Benchmark</p>
+          <h1>MILD</h1>
+          <p class="subtitle">A Manipulation Interface Localization Dataset for UMI-Style Robot Teaching</p>
+          <p class="hero-copy">
+            MILD is designed for studying visual-inertial localization under manipulation-driven motion:
+            handheld teaching, object interaction, low texture surfaces, occlusion, lighting changes,
+            and long-horizon task execution.
+          </p>
+          <div class="hero-actions" aria-label="Project links">
+            <a class="action action-primary" href="#tasks">Explore Tasks</a>
+            <a class="action" href="#release">Dataset Release</a>
+            <a class="action" href="#citation">Citation</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section compact-band" id="overview">
+        <div class="section-inner">
+          <div class="metric-strip" aria-label="Dataset summary">
+            <div class="metric">
+              <span class="metric-value">14</span>
+              <span class="metric-label">planned task groups</span>
+            </div>
+            <div class="metric">
+              <span class="metric-value">6</span>
+              <span class="metric-label">challenge factors</span>
+            </div>
+            <div class="metric">
+              <span class="metric-value">UMI</span>
+              <span class="metric-label">style teaching setting</span>
+            </div>
+            <div class="metric">
+              <span class="metric-value">VIL</span>
+              <span class="metric-label">visual-inertial localization focus</span>
+            </div>
+          </div>
+
+          <div class="split">
+            <div>
+              <p class="section-kicker">Why MILD</p>
+              <h2>Localization where manipulation breaks the easy assumptions.</h2>
+            </div>
+            <div class="body-copy">
+              <p>
+                UMI-style teaching creates camera and IMU trajectories that differ from standard
+                walking, driving, or drone datasets. The motion is close to objects, frequently
+                occluded by hands and task objects, and often includes fast rotations, pauses,
+                contact-rich manipulation, and difficult visual texture.
+              </p>
+              <p>
+                The website is structured around the benchmark tasks first: every task group has a
+                photo slot, scene description, difficulty labels, TAG status, and a dataset link
+                location ready for release.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="benchmark">
+        <div class="section-inner">
+          <div class="section-heading">
+            <p class="section-kicker">Benchmark Design</p>
+            <h2>Task axes, scene axes, and release organization.</h2>
+          </div>
+          <div class="feature-grid">
+            <article class="feature">
+              <h3>Manipulation Motion</h3>
+              <p>Grasp-place, wiping, throwing, wardrobe reaching, object retrieval, and long-horizon organization tasks.</p>
+            </article>
+            <article class="feature">
+              <h3>Localization Stress</h3>
+              <p>Low texture, transparent objects, same-color targets, lighting changes, speed variation, and partial occlusion.</p>
+            </article>
+            <article class="feature">
+              <h3>UMI-Oriented Metadata</h3>
+              <p>Task category, scene description, TAG availability, difficulty labels, preview photo, and dataset URL per task.</p>
+            </article>
+            <article class="feature">
+              <h3>Release-Ready Layout</h3>
+              <p>Each task group is intended to map to a stable download entry with sequence metadata and evaluation notes.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section tasks-section" id="tasks">
+        <div class="section-inner">
+          <div class="tasks-toolbar">
+            <div>
+              <p class="section-kicker">Task Explorer</p>
+              <h2>Planned MILD task groups.</h2>
+            </div>
+            <label class="task-search">
+              <span>Search tasks</span>
+              <input id="taskSearch" type="search" placeholder="cup, wardrobe, low texture..." autocomplete="off">
+            </label>
+          </div>
+
+          <div class="filter-row" aria-label="Task category filters">
+            <button class="filter-chip is-active" type="button" data-filter="all">All</button>
+            <button class="filter-chip" type="button" data-filter="body">Body</button>
+            <button class="filter-chip" type="button" data-filter="grasp-place">Grasp + Place</button>
+            <button class="filter-chip" type="button" data-filter="wipe">Wiping</button>
+            <button class="filter-chip" type="button" data-filter="throw">Throwing</button>
+            <button class="filter-chip" type="button" data-filter="organize">Long Task</button>
+          </div>
+
+          <p class="task-count" id="taskCount">Showing 14 task groups</p>
+
+          <div class="task-grid">
+            <article class="task-card" data-category="body" data-search="overhead wave wardrobe clothes body motion occlusion high reach">
+              <div class="task-photo task-photo-a" role="img" aria-label="Photo slot for overhead wave and wardrobe retrieval task">
+                <span>Task Photo</span>
+              </div>
+              <div class="task-body">
+                <div class="task-topline"><span>01</span><strong>Body Motion</strong></div>
+                <h3>Overhead Wave and Wardrobe Reach</h3>
+                <p>Overhead waving and retrieving clothes from a high wardrobe area.</p>
+                <dl>
+                  <dt>Scene</dt><dd>Upper-body motion near wardrobe storage.</dd>
+                  <dt>TAG</dt><dd>TBD</dd>
+                  <dt>Difficulty</dt><dd>Large arm motion, self-occlusion, high reach.</dd>
+                </dl>
+                <div class="tag-row"><span>Body</span><span>Occlusion</span><span>High reach</span></div>
+                <a class="dataset-link is-disabled" href="#" aria-disabled="true">Dataset pending</a>
+              </div>
+            </article>
+
+            <article class="task-card" data-category="grasp-place" data-search="water cup clutter auxiliary object table slow standard grasp place">
+              <div class="task-photo task-photo-b" role="img" aria-label="Photo slot for normal cup with auxiliary objects">
+                <span>Task Photo</span>
+              </div>
+              <div class="task-body">
+                <div class="task-topline"><span>02</span><strong>Grasp + Place</strong></div>
+                <h3>Cup Pick-and-Place with Auxiliary Objects</h3>
+                <p>Pick and place a normal target water cup on a tabletop with nearby objects.</p>
+                <dl>
+                  <dt>Scene</dt><dd>Normal target cup, table, auxiliary objects.</dd>
+                  <dt>TAG</dt><dd>TBD</dd>
+                  <dt>Difficulty</dt><dd>Slow and standard motion.</dd>
+                </dl>
+                <div class="tag-row"><span>Cup</span><span>Clutter</span><span>Standard</span></div>
+                <a class="dataset-link is-disabled" href="#" aria-disabled="true">Dataset pending</a>
+              </div>
+            </article>
+
+            <article class="task-card" data-category="grasp-place" data-search="water cup table slow standard grasp place clean tabletop">
+              <div class="task-photo task-photo-c" role="img" aria-label="Photo slot for normal cup on table">
+                <span>Task Photo</span>
+              </div>
+              <div class="task-body">
+                <div class="task-topline"><span>03</span><strong>Grasp + Place</strong></div>
+                <h3>Cup Pick-and-Place on Table</h3>
+                <p>Pick and place a normal target water cup on a tabletop without auxiliary clutter.</p>
+                <dl>
+                  <dt>Scene</dt><dd>Normal target cup and table.</dd>
+                  <dt>TAG</dt><dd>TBD</dd>
+                  <dt>Difficulty</dt><dd>Slow and standard motion.</dd>
+                </dl>
+                <div class="tag-row"><span>Cup</span><span>Clean table</span><span>Standard</span></div>
+                <a class="dataset-link is-disabled" href="#" aria-disabled="true">Dataset pending</a>
+              </div>
+            </article>
+
+            <article class="task-card" data-category="grasp-place" data-search="transparent cup table slow low texture grasp place">
+              <div class="task-photo task-photo-d" role="img" aria-label="Photo slot for transparent cup task">
+                <span>Task Photo</span>
+              </div>
+              <div class="task-body">
+                <div class="task-topline"><span>04</span><strong>Grasp + Place</strong></div>
+                <h3>Transparent Cup Pick-and-Place</h3>
+                <p>Pick and place a transparent target cup where visual structure is weak.</p>
+                <dl>
+                  <dt>Scene</dt><dd>Transparent target cup and table.</dd>
+                  <dt>TAG</dt><dd>TBD</dd>
+                  <dt>Difficulty</dt><dd>Slow motion and low texture.</dd>
+                </dl>
+                <div class="tag-row"><span>Transparent</span><span>Low texture</span><span>Cup</span></div>
+                <a class="dataset-link is-disabled" href="#" aria-disabled="true">Dataset pending</a>
+              </div>
+            </article>
+
+            <article class="task-card" data-category="grasp-place" data-search="same color cup table night light switch low texture grasp place">
+              <div class="task-photo task-photo-e" role="img" aria-label="Photo slot for same-color cup task">
+                <span>Task Photo</span>
+              </div>
+              <div class="task-body">
+                <div class="task-topline"><span>05</span><strong>Grasp + Place</strong></div>
+                <h3>Same-Color Cup and Lighting Variants</h3>
+                <p>Pick and place a cup with weak object-background contrast, including night lighting variants.</p>
+                <dl>
+                  <dt>Scene</dt><dd>Same-color cup and table; constant-light and light-switch variants.</dd>
+                  <dt>TAG</dt><dd>TBD</dd>
+                  <dt>Difficulty</dt><dd>Slow motion, low texture, lighting change.</dd>
+                </dl>
+                <div class="tag-row"><span>Same color</span><span>Low texture</span><span>Lighting</span></div>
+                <a class="dataset-link is-disabled" href="#" aria-disabled="true">Dataset pending</a>
+              </div>
+            </article>
+
+            <article class="task-card" data-category="grasp-place" data-search="pen pick place slow standard table">
+              <div class="task-photo task-photo-f" role="img" aria-label="Photo slot for pen pick-and-place task">
+                <span>Task Photo</span>
+              </div>
+              <div class="task-body">
+                <div class="task-topline"><span>06</span><strong>Grasp + Place</strong></div>
+                <h3>Pen Pick-and-Place</h3>
+                <p>Pick and place a small pen-like object on the tabletop.</p>
+                <dl>
+                  <dt>Scene</dt><dd>Tabletop pen manipulation.</dd>
+                  <dt>TAG</dt><dd>TBD</dd>
+                  <dt>Difficulty</dt><dd>Slow and standard motion.</dd>
+                </dl>
+                <div class="tag-row"><span>Small object</span><span>Table</span><span>Standard</span></div>
+                <a class="dataset-link is-disabled" href="#" aria-disabled="true">Dataset pending</a>
+              </div>
+            </article>
+
+            <article class="task-card" data-category="grasp-place" data-search="box retrieve object partial occlusion lighting change slow">
+              <div class="task-photo task-photo-g" role="img" aria-label="Photo slot for object retrieval from box">
+                <span>Task Photo</span>
+              </div>
+              <div class="task-body">
+                <div class="task-topline"><span>07</span><strong>Grasp + Place</strong></div>
+                <h3>Object Retrieval from Box</h3>
+                <p>Reach into a box and take out an object under partial visual obstruction.</p>
+                <dl>
+                  <dt>Scene</dt><dd>Object inside box or container.</dd>
+                  <dt>TAG</dt><dd>TBD</dd>
+                  <dt>Difficulty</dt><dd>Slow motion, lighting change, partial occlusion.</dd>
+                </dl>
+                <div class="tag-row"><span>Box</span><span>Occlusion</span><span>Lighting</span></div>
+                <a class="dataset-link is-disabled" href="#" aria-disabled="true">Dataset pending</a>
+              </div>
+            </article>
+
+            <article class="task-card" data-category="grasp-place" data-search="wardrobe clothes open cabinet dark interior no light partial occlusion">
+              <div class="task-photo task-photo-h" role="img" aria-label="Photo slot for wardrobe clothes retrieval">
+                <span>Task Photo</span>
+              </div>
+              <div class="task-body">
+                <div class="task-topline"><span>08</span><strong>Grasp + Place</strong></div>
+                <h3>Open Wardrobe and Take Clothes</h3>
+                <p>Open a wardrobe and retrieve clothing from a dark cabinet interior.</p>
+                <dl>
+                  <dt>Scene</dt><dd>Wardrobe with no internal light.</dd>
+                  <dt>TAG</dt><dd>TBD</dd>
+                  <dt>Difficulty</dt><dd>Slow motion, lighting change, partial occlusion.</dd>
+                </dl>
+                <div class="tag-row"><span>Wardrobe</span><span>Dark interior</span><span>Occlusion</span></div>
+                <a class="dataset-link is-disabled" href="#" aria-disabled="true">Dataset pending</a>
+              </div>
+            </article>
+
+            <article class="task-card" data-category="wipe" data-search="wipe table auxiliary objects target table speed variation">
+              <div class="task-photo task-photo-i" role="img" aria-label="Photo slot for wiping table with auxiliary objects">
+                <span>Task Photo</span>
+              </div>
+              <div class="task-body">
+                <div class="task-topline"><span>09</span><strong>Wiping</strong></div>
+                <h3>Wipe Table with Auxiliary Objects</h3>
+                <p>Wipe a target table surface while nearby objects create visual and motion variation.</p>
+                <dl>
+                  <dt>Scene</dt><dd>Target table and auxiliary objects.</dd>
+                  <dt>TAG</dt><dd>TBD</dd>
+                  <dt>Difficulty</dt><dd>Speed variation.</dd>
+                </dl>
+                <div class="tag-row"><span>Wiping</span><span>Aux objects</span><span>Speed</span></div>
+                <a class="dataset-link is-disabled" href="#" aria-disabled="true">Dataset pending</a>
+              </div>
+            </article>
+
+            <article class="task-card" data-category="wipe" data-search="wipe empty table low texture speed variation">
+              <div class="task-photo task-photo-j" role="img" aria-label="Photo slot for wiping empty table">
+                <span>Task Photo</span>
+              </div>
+              <div class="task-body">
+                <div class="task-topline"><span>10</span><strong>Wiping</strong></div>
+                <h3>Wipe Empty Table</h3>
+                <p>Wipe a visually simple table surface with limited landmarks.</p>
+                <dl>
+                  <dt>Scene</dt><dd>Empty target table.</dd>
+                  <dt>TAG</dt><dd>TBD</dd>
+                  <dt>Difficulty</dt><dd>Low texture and speed variation.</dd>
+                </dl>
+                <div class="tag-row"><span>Low texture</span><span>Wiping</span><span>Speed</span></div>
+                <a class="dataset-link is-disabled" href="#" aria-disabled="true">Dataset pending</a>
+              </div>
+            </article>
+
+            <article class="task-card" data-category="throw" data-search="throw ball high speed change category throwing long">
+              <div class="task-photo task-photo-k" role="img" aria-label="Photo slot for throwing task">
+                <span>Task Photo</span>
+              </div>
+              <div class="task-body">
+                <div class="task-topline"><span>11</span><strong>Throwing</strong></div>
+                <h3>Throw Ball and Category Throwing</h3>
+                <p>Throw a ball or classify and throw objects, creating high-speed motion segments.</p>
+                <dl>
+                  <dt>Scene</dt><dd>Throwing target area with ball or category objects.</dd>
+                  <dt>TAG</dt><dd>TBD</dd>
+                  <dt>Difficulty</dt><dd>High speed variation and long-horizon variant.</dd>
+                </dl>
+                <div class="tag-row"><span>Throw</span><span>High speed</span><span>Long</span></div>
+                <a class="dataset-link is-disabled" href="#" aria-disabled="true">Dataset pending</a>
+              </div>
+            </article>
+
+            <article class="task-card" data-category="organize" data-search="organize desktop long task table">
+              <div class="task-photo task-photo-l" role="img" aria-label="Photo slot for organizing desktop">
+                <span>Task Photo</span>
+              </div>
+              <div class="task-body">
+                <div class="task-topline"><span>12</span><strong>Long Task</strong></div>
+                <h3>Organize Desktop</h3>
+                <p>Complete a longer desktop organization sequence across multiple objects.</p>
+                <dl>
+                  <dt>Scene</dt><dd>Desktop organization area.</dd>
+                  <dt>TAG</dt><dd>TBD</dd>
+                  <dt>Difficulty</dt><dd>Long-horizon execution.</dd>
+                </dl>
+                <div class="tag-row"><span>Long</span><span>Organization</span><span>Table</span></div>
+                <a class="dataset-link is-disabled" href="#" aria-disabled="true">Dataset pending</a>
+              </div>
+            </article>
+
+            <article class="task-card" data-category="organize" data-search="organize desktop rack under shelf full occlusion low texture long">
+              <div class="task-photo task-photo-m" role="img" aria-label="Photo slot for organizing desktop rack">
+                <span>Task Photo</span>
+              </div>
+              <div class="task-body">
+                <div class="task-topline"><span>13</span><strong>Long Task</strong></div>
+                <h3>Organize Desktop Rack</h3>
+                <p>Place and retrieve objects around a rack, including objects fully hidden below it.</p>
+                <dl>
+                  <dt>Scene</dt><dd>Object placement under a tabletop rack with full occlusion.</dd>
+                  <dt>TAG</dt><dd>TBD</dd>
+                  <dt>Difficulty</dt><dd>Long, low texture, partial or full occlusion.</dd>
+                </dl>
+                <div class="tag-row"><span>Rack</span><span>Occlusion</span><span>Low texture</span></div>
+                <a class="dataset-link is-disabled" href="#" aria-disabled="true">Dataset pending</a>
+              </div>
+            </article>
+
+            <article class="task-card" data-category="organize" data-search="organize box objects long lighting change partial occlusion">
+              <div class="task-photo task-photo-n" role="img" aria-label="Photo slot for organizing objects in box">
+                <span>Task Photo</span>
+              </div>
+              <div class="task-body">
+                <div class="task-topline"><span>14</span><strong>Long Task</strong></div>
+                <h3>Organize Objects in Box</h3>
+                <p>Sort and organize objects inside a box over a longer interaction sequence.</p>
+                <dl>
+                  <dt>Scene</dt><dd>Container or box with multiple objects.</dd>
+                  <dt>TAG</dt><dd>TBD</dd>
+                  <dt>Difficulty</dt><dd>Long, lighting change, partial occlusion.</dd>
+                </dl>
+                <div class="tag-row"><span>Box</span><span>Long</span><span>Lighting</span></div>
+                <a class="dataset-link is-disabled" href="#" aria-disabled="true">Dataset pending</a>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section release-band" id="release">
+        <div class="section-inner">
+          <div class="split">
+            <div>
+              <p class="section-kicker">Release Layout</p>
+              <h2>Designed for photo previews and per-task downloads.</h2>
+            </div>
+            <div class="release-content">
+              <p>
+                The public release area is ready for stable dataset links. Replace each pending
+                link in the task cards after the data packages are uploaded.
+              </p>
+              <pre><code>dataset/
+  task_01_overhead_wave/
+    preview.jpg
+    metadata.json
+    sequences/
+  task_02_cup_auxiliary/
+    preview.jpg
+    metadata.json
+    sequences/</code></pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="citation">
+        <div class="section-inner citation-inner">
+          <div>
+            <p class="section-kicker">Citation</p>
+            <h2>Reference entry placeholder.</h2>
+            <p class="body-copy">
+              Replace the authors, venue, and URL after the paper and dataset release are finalized.
+            </p>
+          </div>
+          <pre class="bibtex"><code>@misc{mild2026,
+  title  = {MILD: A Manipulation Interface Localization Dataset for UMI-Style Robot Teaching},
+  author = {MILD Team},
+  year   = {2026},
+  url    = {https://mild-benchmark.github.io/}
+}</code></pre>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>MILD Benchmark Website. Built as a static GitHub Pages site.</p>
+      <a href="#top">Back to top</a>
+    </footer>
+
+    <script src="static/js/site.js"></script>
+  </body>
+</html>
