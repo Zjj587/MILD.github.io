@@ -318,7 +318,7 @@ h2 {
 .sensor-card {
   display: grid;
   gap: 16px;
-  min-height: 460px;
+  align-content: start;
   padding: 24px;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -359,11 +359,13 @@ h2 {
 
 .sensor-photo {
   width: 100%;
-  aspect-ratio: 16 / 9;
-  object-fit: cover;
+  height: clamp(180px, 22vw, 260px);
+  box-sizing: border-box;
+  padding: 10px;
+  object-fit: contain;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: var(--soft);
+  background: #f7f8f9;
 }
 
 .sensor-card p {
@@ -766,7 +768,8 @@ h2 {
   padding: 14px;
   color: var(--white);
   background-color: #26313b;
-  background-size: cover;
+  background-repeat: no-repeat;
+  background-size: contain;
   background-position: center;
   isolation: isolate;
 }
@@ -788,73 +791,78 @@ h2 {
 }
 
 .task-photo-a {
-  background-color: #315f91;
-  background-image: url("../images/captured/Bookshelf01.jpg");
+  background-color: #3c5164;
+  background-image: url("../images/captured/4apriltag.jpg");
 }
 
 .task-photo-b {
-  background-color: #0f766e;
-  background-image: url("../images/captured/Grab_Place01.jpg");
+  background-color: #4d5b5c;
+  background-image: url("../images/captured/Bookshelf01.jpg");
 }
 
 .task-photo-c {
-  background-color: #596b3d;
-  background-image: url("../images/captured/Grab_Place02.jpg");
-}
-
-.task-photo-d {
-  background-color: #45778d;
-  background-image: url("../images/captured/Grab_Place03.jpg");
-}
-
-.task-photo-e {
-  background-color: #6f5f43;
-  background-image: url("../images/captured/Grab_Place04.jpg");
-}
-
-.task-photo-f {
-  background-color: #5c6670;
-  background-image: url("../images/captured/Grab_Place06.jpg");
-}
-
-.task-photo-g {
-  background-color: #8a623d;
-  background-image: url("../images/captured/Box01.jpg");
-}
-
-.task-photo-h {
-  background-color: #4c5865;
+  background-color: #4f5f4b;
   background-image: url("../images/captured/Bookshelf02.jpg");
 }
 
+.task-photo-d {
+  background-color: #45505a;
+  background-image: url("../images/captured/Box01.jpg");
+}
+
+.task-photo-e {
+  background-color: #5b4d43;
+  background-image: url("../images/captured/Box02.jpg");
+}
+
+.task-photo-f {
+  background-color: #48565d;
+  background-image: url("../images/captured/4aruco.jpg");
+}
+
+.task-photo-g {
+  background-color: #6e644e;
+  background-image: url("../images/captured/Grab_Place01.jpg");
+}
+
+.task-photo-h {
+  background-color: #5c5e56;
+  background-image: url("../images/captured/Grab_Place02.jpg");
+}
+
 .task-photo-i {
-  background-color: #23756e;
-  background-image: url("../images/captured/Wiping01.jpg");
+  background-color: #5a624f;
+  background-image: url("../images/captured/Grab_Place03.jpg");
 }
 
 .task-photo-j {
-  background-color: #65715a;
-  background-image: url("../images/captured/Wiping02.jpg");
+  background-color: #675846;
+  background-image: url("../images/captured/Grab_Place04.jpg");
 }
 
 .task-photo-k {
-  background-color: #c24132;
-  background-image: url("../images/captured/4aruco_side02.jpg");
+  background-color: #6b5748;
+  background-image: url("../images/captured/Grab_Place05.jpg");
 }
 
 .task-photo-l {
-  background-color: #315f91;
-  background-image: url("../images/captured/tablecloth.jpg");
+  background-color: #5e5b50;
+  background-image: url("../images/captured/Grab_Place06.jpg");
 }
 
 .task-photo-m {
-  background-color: #6b5941;
-  background-image: url("../images/captured/Bookshelf02_02.jpg");
+  background-color: #586155;
+  background-image: url("../images/captured/Wiping01.jpg");
 }
 
 .task-photo-n {
-  background-color: #4f6f52;
-  background-image: url("../images/captured/Box02.jpg");
+  background-color: #616055;
+  background-image: url("../images/captured/Wiping02.jpg");
+}
+
+.task-photo-o {
+  background-color: #465d67;
+  background-image: url("../images/captured/2apriltag_side.jpg");
 }
 
 .task-body {

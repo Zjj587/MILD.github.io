@@ -328,3 +328,111 @@ Verification:
 - Front-end text scan for `aligned`, `rosbag`, `x5Bag`, `not usable`, `no data`,
   `X5 Raw`, and `X5 Rosbag`: success, no output.
 - `git diff --check`: success.
+
+## 7. Keep only usable Insight9 display and replace task taxonomy images
+
+Timestamp: 2026-07-12T23:24:49+08:00
+
+CWD: `/media/zjj/Elements/CQU_ZJJ/MILD`
+
+Reason: user clarified that Insight9 unusable/no-data rows should not be shown;
+the page should show where Insight9 is usable, include `X5 + Insight9 usable`,
+replace the old benchmark taxonomy section with the 15 actual v0 tasks, use
+actual images from `static/images/captured/`, and remove the old generated
+preview images. This was a website/static-resource edit only. No robot control,
+Docker replay, collection, rosbag conversion, or UMID pipeline write was run.
+
+Commands and checks:
+
+```bash
+/home/zjj/.cache/agibot/live_shared_memory/team_deep_preflight.sh nova
+find . -maxdepth 3 -name hosting.json -o -path './.openai/hosting.json'
+git status --short
+rg -n "taskSlugs|collectedScenes|renderCollectedInventory|createTaskDownloads|task-photo|sensor-photo|hero-mild-concept|static/images/tasks|Benchmark task taxonomy|Calibration downloads|Task Explorer|release|not usable|no data|X5 usable only" index.html static/js/site.js static/css/site.css README.md
+find static/images -maxdepth 3 -type f | sort
+sed -n '1,120p' README.md
+sed -n '1,340p' static/js/site.js
+sed -n '45,210p' index.html
+sed -n '250,650p' index.html
+sed -n '330,390p' static/css/site.css
+sed -n '740,875p' static/css/site.css
+sed -n '990,1030p' static/css/site.css
+identify static/images/captured/*.jpg | sed -n '1,80p'
+nl -ba static/css/site.css | sed -n '300,390p'
+nl -ba static/css/site.css | sed -n '720,880p'
+nl -ba index.html | sed -n '1,230p'
+nl -ba index.html | sed -n '240,650p'
+```
+
+Edits:
+
+- `index.html`: changed top metrics to `15 v0 collected scenes`, `67 X5
+  usable variants`, `21 X5 + Insight9 usable`, and `9 scenes with Insight9`;
+  changed task explorer wording to the 15 actual v0 scenes; removed explicit
+  `No usable Insight9` task-card text; switched Insight9 sensor photo to
+  `static/images/captured/insight9_01.jpg`; updated release wording away from
+  the old planned taxonomy.
+- `static/js/site.js`: replaced old 14 taxonomy `taskSlugs` with 15 actual v0
+  scene slugs; simplified per-scene release links to scene bundle + manifest;
+  changed inventory rendering so Insight9 cells show green usable counts only
+  when usable data exists, otherwise a neutral placeholder.
+- `static/css/site.css`: changed sensor photos to fixed-height `contain`
+  rendering instead of 16:9 cover cropping; changed task preview images to
+  `contain`; remapped `task-photo-a` through `task-photo-o` to actual captured
+  v0 photos.
+- `README.md`: replaced old generated-image replacement instructions with the
+  current `static/images/captured/` and valid-data website description.
+- Removed old generated assets:
+
+```bash
+# Failed first because apply_patch reads binary PNG as UTF-8:
+apply_patch Delete File static/images/hero-mild-concept.png and static/images/tasks/*.png
+
+# Successful explicit deletion:
+rm -f static/images/hero-mild-concept.png static/images/tasks/task-01-overhead-wardrobe.png static/images/tasks/task-02-cup-aux.png static/images/tasks/task-03-cup-clean.png static/images/tasks/task-04-transparent-cup.png static/images/tasks/task-05-same-color-lighting.png static/images/tasks/task-06-pen.png static/images/tasks/task-07-box-retrieve.png static/images/tasks/task-08-wardrobe-clothes.png static/images/tasks/task-09-wipe.png static/images/tasks/task-10-wipe-empty.png static/images/tasks/task-11-throw.png static/images/tasks/task-12-organize.png static/images/tasks/task-13-rack.png static/images/tasks/task-14-box-organize.png
+rmdir static/images/tasks 2>/dev/null || true
+```
+
+Validation:
+
+```bash
+node --check static/js/site.js
+python3 - <<'PY'
+import re
+from pathlib import Path
+root=Path('/media/zjj/Elements/CQU_ZJJ/MILD')
+files=[root/'index.html', root/'static/css/site.css']
+missing=[]
+for f in files:
+    text=f.read_text(encoding='utf-8')
+    for m in re.findall(r'(?:src|href)="(static/[^"]+\.(?:jpg|jpeg|png|webp|css|js))"', text):
+        if not (root/m).exists():
+            missing.append((str(f.relative_to(root)), m))
+    for m in re.findall(r'url\("?\.\.\/images\/([^\)"\']+)"?\)', text):
+        if not (root/'static/images'/m).exists():
+            missing.append((str(f.relative_to(root)), 'static/images/'+m))
+print('missing_refs', len(missing))
+for item in missing:
+    print(item[0], item[1])
+PY
+rg -n "hero-mild-concept|static/images/tasks|task_01_overhead|task_14_box|Benchmark task taxonomy|broader benchmark taxonomy|No usable Insight9|X5 usable only|0 usable|not usable|no data|aligned rosbag|x5Bag|Insight9 Notes|X5 Rosbag" index.html static/js/site.js static/css/site.css README.md || true
+rg -n "/home/zjj|/media/zjj|/mnt/|Elements|新加卷" index.html static/js/site.js static/css/site.css README.md || true
+git diff --check
+find static/images -maxdepth 3 -type f | sort
+git diff --stat
+git status --short
+git diff -- index.html static/js/site.js static/css/site.css README.md | sed -n '1,260p'
+date --iso-8601=seconds
+```
+
+Verification results:
+
+- `node --check static/js/site.js`: success.
+- Static resource reference check: `missing_refs 0`.
+- Old generated image/task-taxonomy/Insight9 unusable/no-data text scan over
+  public source files: success, no output.
+- Public files private absolute path scan: success, no output.
+- `git diff --check`: success.
+- Remaining image files under `static/images/` are only `static/images/captured/*.jpg`.
+- `git status --short`: modified `README.md`, `index.html`,
+  `static/css/site.css`, `static/js/site.js`; deleted old generated PNG assets.

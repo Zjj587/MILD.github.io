@@ -5,20 +5,21 @@ const taskCount = document.querySelector("#taskCount");
 const releaseBaseUrl = "https://github.com/Zjj587/MILD/releases/download/v0.1/";
 
 const taskSlugs = {
-  "01": "task_01_overhead_wave",
-  "02": "task_02_cup_auxiliary",
-  "03": "task_03_cup_clean_table",
-  "04": "task_04_transparent_cup",
-  "05": "task_05_same_color_lighting",
-  "06": "task_06_pen_pick_place",
-  "07": "task_07_box_retrieval",
-  "08": "task_08_wardrobe_clothes",
-  "09": "task_09_wipe_auxiliary",
-  "10": "task_10_wipe_empty_table",
-  "11": "task_11_throwing",
-  "12": "task_12_desktop_organization",
-  "13": "task_13_rack_organization",
-  "14": "task_14_box_organization",
+  "01": "analemma_2_t",
+  "02": "bookshelf01_2",
+  "03": "bookshelf02_2",
+  "04": "box01",
+  "05": "box02",
+  "06": "circular_2_t",
+  "07": "grab_place01_t",
+  "08": "grab_place02_t",
+  "09": "grab_place03_t",
+  "10": "grab_place04",
+  "11": "grab_place05",
+  "12": "grab_place06_t",
+  "13": "wiping01",
+  "14": "wiping02_1",
+  "15": "zigzag_2_t",
 };
 
 const collectedScenes = [
@@ -166,7 +167,7 @@ function updateTasks() {
   });
 
   if (taskCount) {
-    taskCount.textContent = `Showing ${visibleCount} task group${visibleCount === 1 ? "" : "s"}`;
+    taskCount.textContent = `Showing ${visibleCount} collected scene${visibleCount === 1 ? "" : "s"}`;
   }
 }
 
@@ -227,13 +228,12 @@ function createTaskDownloads(card) {
 
   heading.append(title, release);
   panel.appendChild(heading);
-  panel.appendChild(createDownloadRow("Original", [createDownloadPill("orin", `${slug}_orin.zip`)]));
-  panel.appendChild(createDownloadRow("ArUco", [1, 2, 3, 4].map((count) => (
-    createDownloadPill(`${count} tag${count > 1 ? "s" : ""}`, `${slug}_aruco_${count}tag.zip`)
-  ))));
-  panel.appendChild(createDownloadRow("AprilTag", [1, 2, 3, 4].map((count) => (
-    createDownloadPill(`${count} tag${count > 1 ? "s" : ""}`, `${slug}_apriltag_${count}tag.zip`)
-  ))));
+  panel.appendChild(createDownloadRow("Scene", [
+    createDownloadPill("bundle", `${slug}_scene_bundle.zip`),
+  ]));
+  panel.appendChild(createDownloadRow("Metadata", [
+    createDownloadPill("manifest", `${slug}_manifest.json`),
+  ]));
 
   return panel;
 }
@@ -269,13 +269,17 @@ function renderCollectedInventory() {
     x5Raw.appendChild(createStatusBadge(`${scene.x5Raw}/${scene.variantCount} usable`, "good"));
 
     const insight = document.createElement("td");
-    const insightWrap = document.createElement("div");
-    insightWrap.className = "sensor-chip-row";
-    insightWrap.appendChild(createStatusBadge(`${scene.insight9Usable} usable`, scene.insight9Usable ? "good" : "warn"));
-    insight.appendChild(insightWrap);
+    if (scene.insight9Usable > 0) {
+      const insightWrap = document.createElement("div");
+      insightWrap.className = "sensor-chip-row";
+      insightWrap.appendChild(createStatusBadge(`${scene.insight9Usable} usable`, "good"));
+      insight.appendChild(insightWrap);
+    } else {
+      insight.textContent = "-";
+    }
 
     const notes = document.createElement("td");
-    notes.textContent = scene.insight9Variants === "none" ? "X5 usable only" : scene.insight9Variants;
+    notes.textContent = scene.insight9Variants === "none" ? "-" : scene.insight9Variants;
 
     row.append(name, variants, x5Raw, insight, notes);
     tableBody.appendChild(row);
@@ -283,7 +287,8 @@ function renderCollectedInventory() {
 
   if (inventoryCount) {
     const totalVariants = collectedScenes.reduce((sum, scene) => sum + scene.variantCount, 0);
-    inventoryCount.textContent = `${collectedScenes.length} scenes / ${totalVariants} variants`;
+    const insightVariants = collectedScenes.reduce((sum, scene) => sum + scene.insight9Usable, 0);
+    inventoryCount.textContent = `${collectedScenes.length} scenes / ${totalVariants} X5 usable / ${insightVariants} X5+I9 usable`;
   }
 }
 
