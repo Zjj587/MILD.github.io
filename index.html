@@ -34,6 +34,7 @@
         <a href="#benchmark">Benchmark</a>
         <a href="#sensors">Sensors</a>
         <a href="#sequences">Sequences</a>
+        <a href="#collected">v0 Snapshot</a>
         <a href="#tasks">Tasks</a>
         <a href="#release">Release</a>
         <a href="#citation">Citation</a>
@@ -65,20 +66,20 @@
         <div class="section-inner">
           <div class="metric-strip" aria-label="Dataset summary">
             <div class="metric">
-              <span class="metric-value">14</span>
-              <span class="metric-label">planned task groups</span>
+              <span class="metric-value">15</span>
+              <span class="metric-label">v0 collected scenes</span>
             </div>
             <div class="metric">
-              <span class="metric-value">1-4</span>
-              <span class="metric-label">TAG layout counts</span>
+              <span class="metric-value">67</span>
+              <span class="metric-label">X5 sequence bundles</span>
             </div>
             <div class="metric">
-              <span class="metric-value">2</span>
-              <span class="metric-label">TAG systems</span>
+              <span class="metric-value">15</span>
+              <span class="metric-label">aligned rosbag bundles</span>
             </div>
             <div class="metric">
-              <span class="metric-value">Many</span>
-              <span class="metric-label">appearance variants per scene</span>
+              <span class="metric-value">52</span>
+              <span class="metric-label">pending X5 conversions</span>
             </div>
           </div>
 
@@ -98,6 +99,12 @@
                 The website is structured around the benchmark tasks first: every task group has a
                 preview image, scene description, difficulty labels, sequence-variant summary, and a
                 dataset link location ready for release.
+              </p>
+              <p>
+                The current v0 snapshot contains collected manipulation, wiping, bookshelf, box,
+                and motion-pattern scenes. It is tracked separately from the broader planned task
+                taxonomy so the public page can show both the benchmark design and the data already
+                present in the pre-release folder.
               </p>
             </div>
           </div>
@@ -125,7 +132,7 @@
             </article>
             <article class="feature">
               <h3>Release-Ready Layout</h3>
-              <p>Each scene maps to multiple sequence bundles: original data, ArUco layouts, AprilTag layouts, and appearance variants.</p>
+              <p>Each collected scene maps to original, ArUco, AprilTag, and appearance-variant folders that can become public release bundles.</p>
             </article>
           </div>
         </div>
@@ -165,7 +172,7 @@
               </p>
               <dl>
                 <dt>Signals</dt><dd>Color, depth or infrared camera records, IMU, VIO, and device timestamps.</dd>
-                <dt>Release</dt><dd>Camera intrinsics, static transforms, IMU parameters, and VIO metadata.</dd>
+                <dt>Release</dt><dd>Camera intrinsics, static transforms, IMU parameters, and audited capture metadata.</dd>
               </dl>
               <div class="sensor-downloads" aria-label="Insight9 calibration downloads">
                 <a href="https://github.com/Zjj587/MILD/releases/download/v0.1/calibration_insight9_intrinsics.zip">Intrinsics</a>
@@ -190,10 +197,10 @@
             </div>
             <div class="body-copy">
               <p>
-                For each operation scene, MILD separates the original capture from TAG-assisted
-                captures. TAG-assisted sequences vary both the marker type and the number of visible
-                tags, then combine with scene appearance factors such as tablecloth, object material,
-                lighting, clutter, and occlusion.
+                For each operation scene, MILD separates the original capture from tag-assisted
+                captures. The current v0 folder uses original, ArUco, AprilTag Custom48h12, and
+                appearance-variant folders, with four-tag layouts as the primary marker condition
+                and selected one- or two-tag subsets for sensitivity studies.
               </p>
               <p>
                 This organization keeps the benchmark useful for both pure visual-inertial
@@ -212,20 +219,20 @@
             <article class="variant-panel">
               <span class="variant-index">B</span>
               <h3>ArUco</h3>
-              <p>Marker-assisted sequences with one to four ArUco tags in the scene.</p>
-              <code>aruco/{1,2,3,4}/</code>
+              <p>Marker-assisted sequences with the four-tag layout as the v0 default, plus selected one- and two-tag studies.</p>
+              <code>aruco/{1,2,4}/</code>
             </article>
             <article class="variant-panel">
               <span class="variant-index">C</span>
               <h3>AprilTag</h3>
-              <p>Marker-assisted sequences across 36h11, Standard41h12, Circle21h7, and Custom48h12 families.</p>
-              <code>apriltag/&lt;family&gt;/{1,2,3,4}/</code>
+              <p>Marker-assisted sequences currently organized with the Custom48h12 family and selected tag counts.</p>
+              <code>apriltag/custom48h12/{1,2,4}/</code>
             </article>
             <article class="variant-panel">
               <span class="variant-index">D</span>
               <h3>Appearance</h3>
-              <p>Scene variants such as different tablecloths, target colors, transparent objects, lighting states, and clutter.</p>
-              <code>scene_variant/sequence_id</code>
+              <p>Scene variants include tablecloth captures for selected desktop and motion-pattern scenes.</p>
+              <code>tablecloth/</code>
             </article>
           </div>
 
@@ -235,19 +242,74 @@
               <p>Each downloadable task entry should expose the scene, sequence family, marker setup, and material variant.</p>
             </div>
             <pre><code>dataset/
-  Grab_place/
+  Grab_Place01_t/
     orin/
     aruco/
-      1/ 2/ 3/ 4/
+      4/
     apriltag/
-      36h11/1..4
-      standard41h12/1..4
-      circle21h7/1..4
-      custom48h12/1..4
-    variants/
-      tablecloth_01/
-      tablecloth_02/
-      lighting_change/</code></pre>
+      custom48h12/
+        4/
+    tablecloth/</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="section collected-section" id="collected">
+        <div class="section-inner">
+          <div class="section-heading">
+            <p class="section-kicker">v0 Collected Snapshot</p>
+            <h2>Current local inventory distilled into release-facing structure.</h2>
+          </div>
+
+          <div class="snapshot-grid" aria-label="Collected v0 summary">
+            <article class="snapshot-card">
+              <span>15</span>
+              <strong>scene folders</strong>
+              <p>Task-level folders selected for the v0 website snapshot.</p>
+            </article>
+            <article class="snapshot-card">
+              <span>67</span>
+              <strong>X5 sequences</strong>
+              <p>Convertible Insta360 X5 camera-IMU sequence folders.</p>
+            </article>
+            <article class="snapshot-card">
+              <span>15</span>
+              <strong>aligned bags</strong>
+              <p>Sequence folders already carrying rosbag, summary, and aligned TUM outputs.</p>
+            </article>
+            <article class="snapshot-card">
+              <span>8</span>
+              <strong>tablecloth scenes</strong>
+              <p>Appearance-variant scenes for low-texture tabletop stress testing.</p>
+            </article>
+          </div>
+
+          <div class="inventory-panel">
+            <div class="inventory-header">
+              <div>
+                <h3>Collected Scene Inventory</h3>
+                <p>
+                  This table reflects the current v0 folder organization. Public download assets
+                  should be generated from these scene-level manifests after calibration and quality
+                  owner review.
+                </p>
+              </div>
+              <span id="inventoryCount">15 scenes</span>
+            </div>
+            <div class="inventory-scroll">
+              <table class="inventory-table">
+                <thead>
+                  <tr>
+                    <th>Scene</th>
+                    <th>X5 Bundles</th>
+                    <th>Variants</th>
+                    <th>Sensors</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="collectedInventory"></tbody>
+              </table>
+            </div>
           </div>
         </div>
       </section>
@@ -257,7 +319,7 @@
           <div class="tasks-toolbar">
             <div>
               <p class="section-kicker">Task Explorer</p>
-              <h2>Planned MILD task groups.</h2>
+              <h2>Benchmark task taxonomy.</h2>
             </div>
             <label class="task-search">
               <span>Search tasks</span>
@@ -541,9 +603,9 @@
             </div>
             <div class="release-content">
               <p>
-                The public release area is ready for stable dataset links. Each task card exposes
-                the original sequence plus separate ArUco and AprilTag bundles by marker count, so
-                a four-tag condition has its own download link instead of being mixed into one file.
+                The public release area is ready for stable dataset links. The current v0 inventory
+                is organized by scene folder and sequence variant, while the task explorer keeps the
+                broader benchmark taxonomy visible for the paper and final release.
               </p>
               <pre><code>dataset/
   calibration/
@@ -551,24 +613,18 @@
     calibration_insta360_x5_extrinsics.zip
     calibration_insight9_intrinsics.zip
     calibration_insight9_extrinsics.zip
-  task_01_overhead_wave/
-    preview.jpg
-    metadata.json
-    sequences/
-  task_02_cup_auxiliary/
-    preview.jpg
-    metadata.json
-    sequences/
+  scenes/
+    Grab_Place01_t/
+      metadata.json
       orin/
-      aruco_1tag/
-      aruco_2tag/
-      aruco_3tag/
-      aruco_4tag/
-      apriltag_1tag/
-      apriltag_2tag/
-      apriltag_3tag/
-      apriltag_4tag/
-      tablecloth_variant_01/</code></pre>
+      aruco/4/
+      apriltag/custom48h12/4/
+      tablecloth/
+  tasks/
+    task_01_overhead_wave/
+      preview.jpg
+      metadata.json
+      sequence_manifest.json</code></pre>
             </div>
           </div>
         </div>
