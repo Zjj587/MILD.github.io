@@ -2351,3 +2351,105 @@ Safety boundary:
 - Website HTML/CSS/JS display-only adjustment.
 - Did not run Docker replay, robot control, collection, rosbag conversion, or
   UMID data/pipeline writes.
+
+## 30. Compact sensor cards and use scene previews in task dialog
+
+Timestamp: 2026-07-14T02:10:41+08:00
+
+Purpose:
+
+- Rework `Wide-view motion with stereo depth support.` into stacked sensor
+  cards, with each sensor photo on the left and text/downloads on the right.
+- Remove `VIO records` from the Insight9 public sensor signal description.
+- Make `One task scene expands into many localization sequences.` scene images
+  scale fully inside their preview windows.
+- Rotate the task explorer preview images for `Box 02`, `Grab Place 02`, and
+  `Grab Place 06` by 90 degrees.
+- Change the task-detail dialog visual panel so it no longer copies the parent
+  task image; it now switches to the selected scene image when a scene option
+  is selected.
+
+Files changed:
+
+- `index.html`
+  - Updated Insight9 signal copy.
+  - Updated JS cache-bust query to `v=20260714-layout-scenes`.
+- `static/css/site.css`
+  - Made `.sensor-grid` one column and `.sensor-card` a compact two-column
+    layout.
+  - Assigned sensor photo/text/download grid areas.
+  - Changed `.variant-photo` to `object-fit: contain`.
+  - Added rotated pseudo-element previews for `.task-photo-e`,
+    `.task-photo-h`, and `.task-photo-l`.
+  - Changed `.task-detail-photo` background sizing to `contain`.
+  - Added mobile fallback for sensor cards.
+- `static/js/site.js`
+  - Added `scenePreviewImages` and `scenePreviewColors`.
+  - Added `renderScenePreview(scene)`.
+  - Removed `copyTaskPhotoStyle()` usage from the task dialog flow.
+  - Updated scene option clicks to refresh both sensor details and scene
+    preview image.
+
+Commands run:
+
+```bash
+cd /media/zjj/Elements/CQU_ZJJ/MILD
+/home/zjj/.cache/agibot/live_shared_memory/team_deep_preflight.sh nova
+rg -n "sensor-card|sensor-photo|Depth and geometry|VIO records|variant-photo|task-photo-|task-detail-photo|copyTaskPhotoStyle|renderSensorDetail|openTaskDetail|buildSceneEntries|sceneSlug|sceneKey" index.html static/css/site.css static/js/site.js
+find static/images/pic -maxdepth 2 -type f | sort
+identify -format '%f %wx%h\n' static/images/pic/task/Box02.jpg static/images/pic/task/Grab_Place02.jpg static/images/pic/task/Grab_Place06.jpg static/images/pic/scenes/*.jpg 2>/dev/null || true
+node --check static/js/site.js
+python3 - <<'PY'
+from pathlib import Path
+from bs4 import BeautifulSoup
+soup=BeautifulSoup(Path('index.html').read_text(encoding='utf-8'), 'html.parser')
+print('script_src', soup.select_one('script[src^="static/js/site.js"]')['src'])
+print('sensor_cards', len(soup.select('.sensor-card')))
+print('insight_signals', soup.select('.sensor-card')[1].select_one('dd').get_text(' ', strip=True))
+print('task_photo_e_classes', soup.select_one('.task-photo-e').get('class'))
+print('task_photo_h_classes', soup.select_one('.task-photo-h').get('class'))
+print('task_photo_l_classes', soup.select_one('.task-photo-l').get('class'))
+PY
+google-chrome --headless=new --no-sandbox --disable-gpu --hide-scrollbars --window-size=1440,5600 --screenshot=/tmp/mild_layout_scenes.png file:///media/zjj/Elements/CQU_ZJJ/MILD/index.html
+google-chrome --headless=new --no-sandbox --disable-gpu --hide-scrollbars --window-size=1440,9000 --screenshot=/tmp/mild_layout_scenes_full.png file:///media/zjj/Elements/CQU_ZJJ/MILD/index.html
+node <<'NODE'
+// Verify all collected scene variants map to a scene preview image key.
+NODE
+python3 - <<'PY'
+# Static asset reference check covering HTML, CSS, and JS image strings.
+PY
+rg -n "/home/zjj|/media/zjj|/mnt/|Elements|新加卷" index.html static/js/site.js static/css/site.css README.md || true
+node --check static/js/site.js && git diff --check
+git diff -- index.html static/css/site.css static/js/site.js | sed -n '1,260p'
+date -Iseconds && git diff --stat && git status --short
+```
+
+Validation results:
+
+- `node --check static/js/site.js`: success.
+- `git diff --check`: success.
+- Static asset reference check: `missing_refs 0`.
+- Public files private absolute path scan: success, no output.
+- DOM/copy checks:
+  - `script_src static/js/site.js?v=20260714-layout-scenes`
+  - `sensor_cards 2`
+  - Insight9 signals: `Left/right grayscale images, IMU, image timestamps, and
+    optional RGB or depth records.`
+- Scene preview mapping:
+  - all current collected scene variants map to a preview image.
+  - `scene_preview_missing 0`.
+- Headless Chrome screenshots rendered successfully:
+  - `/tmp/mild_layout_scenes.png`
+  - `/tmp/mild_layout_scenes_full.png`
+
+Limitations:
+
+- `puppeteer`, `playwright`, and `jsdom` are not installed locally, so the task
+  dialog scene switch was validated by static JS checks and scene-mapping
+  simulation rather than an automated browser click test.
+
+Safety boundary:
+
+- Website HTML/CSS/JS display-only adjustment.
+- Did not run Docker replay, robot control, collection, rosbag conversion, or
+  UMID data/pipeline writes.

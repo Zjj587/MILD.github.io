@@ -274,6 +274,28 @@ const sensorCatalog = {
   },
 };
 
+const scenePreviewImages = {
+  table: "static/images/pic/scenes/table.jpg",
+  tablecloth: "static/images/pic/scenes/tablecloth.jpg",
+  "aruco 1": "static/images/pic/scenes/aruco2.jpg",
+  "aruco 2": "static/images/pic/scenes/aruco2.jpg",
+  "aruco 4": "static/images/pic/scenes/aruco4.jpg",
+  "apriltag 1": "static/images/pic/scenes/apriltag2.jpg",
+  "apriltag 2": "static/images/pic/scenes/apriltag2.jpg",
+  "apriltag 4": "static/images/pic/scenes/apriltag4.jpg",
+};
+
+const scenePreviewColors = {
+  table: "#f3f0e7",
+  tablecloth: "#f7ece8",
+  "aruco 1": "#eef1eb",
+  "aruco 2": "#eef1eb",
+  "aruco 4": "#eef1eb",
+  "apriltag 1": "#ecefeb",
+  "apriltag 2": "#ecefeb",
+  "apriltag 4": "#ecefeb",
+};
+
 function expandVariantList(value) {
   if (!value || normalize(value) === "none") return [];
 
@@ -311,6 +333,19 @@ function buildSceneEntries(task) {
     }
     return { name: sceneName, sensors };
   });
+}
+
+function renderScenePreview(scene) {
+  if (!taskDetailRefs.photo) return;
+  const key = sceneKey(scene.name);
+  const image = scenePreviewImages[key] || scenePreviewImages.table;
+  taskDetailRefs.photo.style.backgroundColor = scenePreviewColors[key] || "#eef3ef";
+  taskDetailRefs.photo.style.backgroundImage = `url("${image}")`;
+  taskDetailRefs.photo.style.backgroundPosition = "center";
+  taskDetailRefs.photo.style.backgroundRepeat = "no-repeat";
+  taskDetailRefs.photo.style.backgroundSize = "contain";
+  taskDetailRefs.photo.style.transform = "";
+  taskDetailRefs.photo.dataset.scenePreview = sceneFilterToken(scene.name);
 }
 
 function createTaskDetailDialog() {
@@ -369,17 +404,6 @@ const taskDetailRefs = {
 };
 
 let lastTaskTrigger = null;
-
-function copyTaskPhotoStyle(source) {
-  if (!source || !taskDetailRefs.photo) return;
-  const style = window.getComputedStyle(source);
-  taskDetailRefs.photo.style.backgroundColor = style.backgroundColor;
-  taskDetailRefs.photo.style.backgroundImage = style.backgroundImage;
-  taskDetailRefs.photo.style.backgroundPosition = style.backgroundPosition;
-  taskDetailRefs.photo.style.backgroundRepeat = style.backgroundRepeat;
-  taskDetailRefs.photo.style.backgroundSize = style.backgroundSize;
-  taskDetailRefs.photo.style.transform = style.transform === "none" ? "" : style.transform;
-}
 
 function renderSensorDetail(scene) {
   taskDetailRefs.sensorTitle.textContent = scene.name;
@@ -457,11 +481,13 @@ function renderSceneOptions(scenes) {
         item.setAttribute("aria-pressed", item === button ? "true" : "false");
       });
       renderSensorDetail(scene);
+      renderScenePreview(scene);
     });
 
     if (index === 0) {
       button.classList.add("is-active");
       renderSensorDetail(scene);
+      renderScenePreview(scene);
     }
 
     taskDetailRefs.sceneList.appendChild(button);
@@ -489,7 +515,6 @@ function openTaskDetail(card) {
   }));
 
   lastTaskTrigger = photo;
-  copyTaskPhotoStyle(photo);
   taskDetailRefs.kicker.textContent = taskCategory || "Task scenes";
   taskDetailRefs.title.textContent = task.name;
   taskDetailRefs.summary.textContent = taskSummary;
