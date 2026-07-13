@@ -1093,3 +1093,70 @@ Safety boundary:
 - Website copy update only.
 - Did not run Docker replay, robot control, collection, rosbag conversion, or
   UMID data/pipeline writes.
+
+## 15. Reduce section heading scale
+
+Timestamp: 2026-07-13T18:40:46+08:00
+
+Reason: user said large section titles such as `Benchmark task scenarios.` and
+`Collected scenarios distilled into release-facing structure.` looked too big
+for the public page.
+
+Edits:
+
+- `static/css/site.css`
+  - Reduced global section `h2` sizing from `clamp(2rem, 5vw, 4rem)` to
+    `clamp(1.6rem, 3.2vw, 2.8rem)`.
+  - Increased `h2` line-height from `1.02` to `1.08` so the smaller display
+    titles breathe cleanly.
+
+Commands and checks:
+
+```bash
+/home/zjj/.cache/agibot/live_shared_memory/team_deep_preflight.sh nova
+rg -n "section-heading|section h2|h2|tasks|collected|snapshot|clamp" static/css/site.css index.html
+sed -n '1,180p' static/css/site.css
+sed -n '180,360p' static/css/site.css
+node --check static/js/site.js
+python3 - <<'PY'
+import re
+from pathlib import Path
+from urllib.parse import urlsplit
+root=Path('/media/zjj/Elements/CQU_ZJJ/MILD')
+files=[root/'index.html', root/'static/css/site.css']
+missing=[]
+for f in files:
+    text=f.read_text(encoding='utf-8')
+    for m in re.findall(r'(?:src|href|content)="(static/[^"]+\.(?:jpg|jpeg|png|webp|css|js)(?:\?[^"]*)?)"', text):
+        rel=urlsplit(m).path
+        if not (root/rel).exists():
+            missing.append((str(f.relative_to(root)), m))
+    for m in re.findall(r'url\("?\.\.\/images\/([^\)"\']+)"?\)', text):
+        rel=urlsplit(m).path
+        if not (root/'static/images'/rel).exists():
+            missing.append((str(f.relative_to(root)), 'static/images/'+m))
+print('missing_refs', len(missing))
+for item in missing:
+    print(item[0], item[1])
+PY
+rg -n "/home/zjj|/media/zjj|/mnt/|Elements|新加卷" index.html static/js/site.js static/css/site.css README.md || true
+git diff --check
+date --iso-8601=seconds
+git diff --stat
+git status --short
+nl -ba static/css/site.css | sed -n '250,264p'
+```
+
+Validation results:
+
+- `node --check static/js/site.js`: success.
+- Static resource reference check: `missing_refs 0`.
+- Public files private absolute path scan: success, no output.
+- `git diff --check`: success.
+- Final changed file for this step: `static/css/site.css`.
+
+Safety boundary:
+
+- Website CSS-only visual adjustment.
+- Did not run Docker replay, robot control, collection, rosbag conversion, or
+  UMID data/pipeline writes.
