@@ -2189,3 +2189,86 @@ Safety boundary:
 - Website HTML/JS display-only adjustment.
 - Did not run Docker replay, robot control, collection, rosbag conversion, or
   UMID data/pipeline writes.
+
+## 28. Add empty-result coming soon message
+
+Timestamp: 2026-07-14T01:05:41+08:00
+
+Purpose:
+
+- Add a lightweight empty-result state below `Showing 0 benchmark tasks`.
+- User request: show `coming soon...` when a filter/search combination has no
+  matching task.
+
+Files changed:
+
+- `index.html`
+  - Added `<p class="task-empty" id="taskEmpty" hidden>coming soon...</p>`
+    after the task count line.
+  - Updated JS cache-bust query to `v=20260714-empty-state`.
+- `static/js/site.js`
+  - Added `taskEmpty` DOM reference.
+  - Toggled `taskEmpty.hidden` based on `visibleCount !== 0`.
+- `static/css/site.css`
+  - Added `.task-empty` styling and hidden-state rule.
+  - Kept normal task-grid spacing stable when the message is hidden.
+
+Commands run:
+
+```bash
+cd /media/zjj/Elements/CQU_ZJJ/MILD
+/home/zjj/.cache/agibot/live_shared_memory/team_deep_preflight.sh nova
+rg -n "taskCount|task-grid|filter-panel|benchmark task|is-hidden|no-result|empty" index.html static/js/site.js static/css/site.css
+sed -n '300,390p' index.html && sed -n '180,220p' static/js/site.js
+sed -n '640,745p' static/css/site.css
+tail -120 COMMAND_LOG_website_update_20260712.md
+node --check static/js/site.js
+python3 - <<'PY'
+from pathlib import Path
+from bs4 import BeautifulSoup
+soup=BeautifulSoup(Path('index.html').read_text(encoding='utf-8'), 'html.parser')
+print('task_empty_count', len(soup.select('#taskEmpty')))
+print('task_empty_hidden', soup.select_one('#taskEmpty').has_attr('hidden'))
+print('task_empty_text', soup.select_one('#taskEmpty').get_text(strip=True))
+print('script_src', soup.select_one('script[src^="static/js/site.js"]')['src'])
+PY
+rg -n "taskEmpty|task-empty|20260714-empty-state|coming soon" index.html static/js/site.js static/css/site.css
+node -e "try{require('playwright'); console.log('playwright yes')}catch(e){console.log('playwright no')}"
+node <<'NODE'
+// Functional no-result simulation against current collectedScenes and task cards.
+NODE
+python3 - <<'PY'
+# Static asset reference check.
+PY
+rg -n "/home/zjj|/media/zjj|/mnt/|Elements|新加卷" index.html static/js/site.js static/css/site.css README.md || true
+git diff --check
+date -Iseconds && git diff --stat && git status --short
+google-chrome --headless=new --no-sandbox --disable-gpu --hide-scrollbars --window-size=1440,9000 --screenshot=/tmp/mild_empty_state.png file:///media/zjj/Elements/CQU_ZJJ/MILD/index.html
+```
+
+Validation results:
+
+- `node --check static/js/site.js`: success.
+- DOM check:
+  - `task_empty_count 1`
+  - `task_empty_hidden True`
+  - `task_empty_text coming soon...`
+  - `script_src static/js/site.js?v=20260714-empty-state`
+- Empty-state functional simulation:
+
+```text
+zero_combo visibleCount=0 taskEmpty.hidden=false
+nonzero_combo visibleCount=1 taskEmpty.hidden=true
+zero_search visibleCount=0 taskEmpty.hidden=false
+```
+
+- Static asset reference check: `missing_refs 0`.
+- Public files private absolute path scan: success, no output.
+- `git diff --check`: success.
+- Chrome headless screenshot rendered successfully at `/tmp/mild_empty_state.png`.
+
+Safety boundary:
+
+- Website HTML/CSS/JS display-only adjustment.
+- Did not run Docker replay, robot control, collection, rosbag conversion, or
+  UMID data/pipeline writes.

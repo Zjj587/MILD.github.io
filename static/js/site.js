@@ -2,6 +2,7 @@ const filterButtons = Array.from(document.querySelectorAll(".filter-chip"));
 const cards = Array.from(document.querySelectorAll(".task-card"));
 const searchInput = document.querySelector("#taskSearch");
 const taskCount = document.querySelector("#taskCount");
+const taskEmpty = document.querySelector("#taskEmpty");
 const releaseBaseUrl = "https://github.com/Zjj587/MILD/releases/download/v0.1/";
 
 const taskSlugs = {
@@ -206,6 +207,10 @@ function updateTasks() {
 
   if (taskCount) {
     taskCount.textContent = `Showing ${visibleCount} benchmark task${visibleCount === 1 ? "" : "s"}`;
+  }
+
+  if (taskEmpty) {
+    taskEmpty.hidden = visibleCount !== 0;
   }
 }
 

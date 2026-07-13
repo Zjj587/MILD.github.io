@@ -707,12 +707,24 @@ h2 {
 
 .task-count {
   min-height: 24px;
-  margin: 0 0 20px;
+  margin: 0 0 8px;
   color: var(--muted);
   font-weight: 680;
 }
 
+.task-empty {
+  margin: 0 0 20px;
+  color: var(--teal);
+  font-size: 0.98rem;
+  font-weight: 760;
+}
+
+.task-empty[hidden] {
+  display: none;
+}
+
 .task-grid {
+  margin-top: 12px;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 18px;
