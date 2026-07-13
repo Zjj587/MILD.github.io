@@ -522,3 +522,82 @@ Verification results:
 - Static resource reference check: `missing_refs 0`.
 - Public files private absolute path scan: success, no output.
 - `git diff --check`: success.
+
+## 9. Correct scene-count meaning from pic/scenes
+
+Timestamp: 2026-07-13T16:32:44+08:00
+
+CWD: `/media/zjj/Elements/CQU_ZJJ/MILD`
+
+Reason: user clarified that `6 scenes` means the six organized scene-setting
+images under the curated image folder `UMID/data/v0/pic/scenes`, not the number
+of collected data variants per task. The larger effective sequence count comes
+from sensor expansion. This was a website wording edit only. No robot control,
+Docker replay, collection, rosbag conversion, or UMID pipeline write was run.
+
+Commands and checks:
+
+```bash
+/home/zjj/.cache/agibot/live_shared_memory/team_deep_preflight.sh nova
+find /media/zjj/Elements/CQU_ZJJ/UMID/data/v0/pic -maxdepth 2 -type d | sort
+find /media/zjj/Elements/CQU_ZJJ/UMID/data/v0/pic/scenes -maxdepth 1 -type f | sort
+find /media/zjj/Elements/CQU_ZJJ/UMID/data/v0/pic/sensor -maxdepth 1 -type f | sort
+find /media/zjj/Elements/CQU_ZJJ/UMID/data/v0/pic/task -maxdepth 1 -type f | sort | sed -n '1,80p'
+rg -n "max scene variants|scene variants per task|88 usable|usable sensor sequences|15 task folders|2 sensors|sensorSequences" index.html README.md static/js/site.js
+```
+
+Local evidence:
+
+- `pic/scenes` contains 6 files: `table.jpeg`, `tablecloth.jpeg`,
+  `aruco2.jpeg`, `aruco4.jpeg`, `apriltag2.jpeg`, `apriltag4.jpeg`.
+- `pic/sensor` contains 2 files: `instan360x5.jpeg`, `insight9.jpeg`.
+
+Edits:
+
+- `index.html`: changed the second summary metric and snapshot card from
+  `7 max scene variants / task` to `6 scene settings / task`; changed the
+  sequence explanation to make clear that sensor expansion produces the 88
+  usable sensor sequences.
+- `static/js/site.js`: changed the inventory summary to
+  `15 tasks / 6 scene settings / 2 sensors / 88 sensor sequences`.
+- `README.md`: changed website summary from `up to 7 scene variants per task`
+  to `6 organized scene settings per task`.
+
+Validation:
+
+```bash
+rg -n "max scene variants|up to 7|seven marker|7 scene|scene settings|88 usable|sensorSequences|15 tasks / 6" index.html README.md static/js/site.js
+node --check static/js/site.js
+python3 - <<'PY'
+import re
+from pathlib import Path
+root=Path('/media/zjj/Elements/CQU_ZJJ/MILD')
+files=[root/'index.html', root/'static/css/site.css']
+missing=[]
+for f in files:
+    text=f.read_text(encoding='utf-8')
+    for m in re.findall(r'(?:src|href)="(static/[^"]+\.(?:jpg|jpeg|png|webp|css|js))"', text):
+        if not (root/m).exists():
+            missing.append((str(f.relative_to(root)), m))
+    for m in re.findall(r'url\("?\.\.\/images\/([^\)"\']+)"?\)', text):
+        if not (root/'static/images'/m).exists():
+            missing.append((str(f.relative_to(root)), 'static/images/'+m))
+print('missing_refs', len(missing))
+for item in missing:
+    print(item[0], item[1])
+PY
+rg -n "/home/zjj|/media/zjj|/mnt/|Elements|新加卷" index.html static/js/site.js static/css/site.css README.md || true
+git diff --check
+git diff --stat
+git status --short
+date --iso-8601=seconds
+```
+
+Verification results:
+
+- Old `max scene variants`, `up to 7`, `seven marker`, and `7 scene` wording
+  scan: success, no output except expected `scene settings` lines.
+- `node --check static/js/site.js`: success.
+- Static resource reference check: `missing_refs 0`.
+- Public files private absolute path scan: success, no output.
+- `git diff --check`: success.

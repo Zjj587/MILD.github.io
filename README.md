@@ -8,7 +8,7 @@ This repository hosts the static GitHub Pages website for the MILD benchmark.
 
 - Static HTML/CSS/JS only; no build step is required.
 - The overview and `v0 Snapshot` section summarize the current pre-release
-  collected data inventory: 15 task folders, up to 7 scene variants per task,
+  collected data inventory: 15 task folders, 6 organized scene settings per task,
   2 sensors, and 88 usable sensor sequences.
 - The task explorer mirrors the current 15 collected v0 task folders.
 - Captured website previews are stored under `static/images/captured/` and are

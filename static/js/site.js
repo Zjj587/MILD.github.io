@@ -290,7 +290,7 @@ function renderCollectedInventory() {
     const insta360Sequences = collectedScenes.reduce((sum, scene) => sum + scene.insta360Usable, 0);
     const insightVariants = collectedScenes.reduce((sum, scene) => sum + scene.insight9Usable, 0);
     const sensorSequences = insta360Sequences + insightVariants;
-    inventoryCount.textContent = `${collectedScenes.length} tasks / ${totalVariants} variants / ${sensorSequences} sensor sequences`;
+    inventoryCount.textContent = `${collectedScenes.length} tasks / 6 scene settings / 2 sensors / ${sensorSequences} sensor sequences`;
   }
 }
 
