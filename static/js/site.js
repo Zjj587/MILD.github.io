@@ -190,10 +190,14 @@ function updateTasks() {
 filterButtons.forEach((button) => {
   button.addEventListener("click", () => {
     const group = button.dataset.filterGroup || "category";
-    activeFilters[group] = button.dataset.filter || "all";
+    const nextFilter = button.dataset.filter || "all";
+    const isOptionalGroup = group !== "category";
+    const shouldClear = isOptionalGroup && button.classList.contains("is-active");
+
+    activeFilters[group] = shouldClear ? "all" : nextFilter;
     filterButtons
       .filter((item) => (item.dataset.filterGroup || "category") === group)
-      .forEach((item) => item.classList.toggle("is-active", item === button));
+      .forEach((item) => item.classList.toggle("is-active", !shouldClear && item === button));
     updateTasks();
   });
 });

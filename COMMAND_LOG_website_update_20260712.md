@@ -1768,3 +1768,142 @@ Final validation after this pointer: `git diff --check` success,
 
 Safety boundary: website HTML/CSS/JS display-only adjustment; no Docker replay,
 robot control, collection, rosbag conversion, or UMID pipeline writes.
+
+## 24. Fix Scene/Sensor filters and retune selected task crops
+
+Timestamp: `2026-07-14T00:27:49+08:00`
+
+Purpose:
+
+- Fix Scene/Sensor task explorer filters that showed `0` tasks in the browser.
+- Remove visible `All` chips from Scene and Sensor while keeping the internal
+  default state as unfiltered.
+- Retune selected task-card photos with mild zoom-out and requested vertical
+  shifts.
+
+Files changed:
+
+- `index.html`: removed Scene/Sensor `All` chips; updated CSS cache bust to
+  `20260714-filter-fix`; added JS cache bust
+  `static/js/site.js?v=20260714-filter-fix`.
+- `static/js/site.js`: Scene/Sensor chips now toggle off when clicked again;
+  Task filters keep the explicit `All` chip.
+- `static/css/site.css`: Bookshelf 01/02 and Box 01 use `background-size:
+  96% auto` with lower focal points; Box 02 and Grab Place 06 use
+  `background-size: auto 150%` with higher focal points.
+
+Commands and checks:
+
+```bash
+/home/zjj/.cache/agibot/live_shared_memory/team_deep_preflight.sh nova
+rg -n "script|filter-panel|data-filter-group|task-photo-b|task-photo-c|task-photo-d|task-photo-e|task-photo-l|activeFilters|filterButtons|site.js" index.html static/css/site.css static/js/site.js
+identify static/images/pic/task/Bookshelf01.jpg static/images/pic/task/Bookshelf02_02.jpg static/images/pic/task/Box01.jpg static/images/pic/task/Box02.jpg static/images/pic/task/Grab_Place06.jpg
+node --check static/js/site.js
+python3 - <<'PY'
+from pathlib import Path
+from bs4 import BeautifulSoup
+soup=BeautifulSoup(Path('index.html').read_text(encoding='utf-8'), 'html.parser')
+print('task_cards', len(soup.select('.task-card')))
+print('filter_groups', len(soup.select('.filter-group')))
+print('category_chips', len(soup.select('[data-filter-group="category"]')))
+print('scene_chips', len(soup.select('[data-filter-group="scene"]')))
+print('sensor_chips', len(soup.select('[data-filter-group="sensor"]')))
+print('scene_all_chips', len(soup.select('[data-filter-group="scene"][data-filter="all"]')))
+print('sensor_all_chips', len(soup.select('[data-filter-group="sensor"][data-filter="all"]')))
+print('script_src', soup.select_one('script[src^="static/js/site.js"]')['src'])
+print('stylesheet', soup.select_one('link[rel="stylesheet"]')['href'])
+PY
+python3 - <<'PY'
+from pathlib import Path
+from bs4 import BeautifulSoup
+soup=BeautifulSoup(Path('index.html').read_text(encoding='utf-8'), 'html.parser')
+cards=soup.select('.task-card')
+checks = {
+    'scene:table': ('data-scenes', 'table'),
+    'scene:tablecloth': ('data-scenes', 'tablecloth'),
+    'scene:aruco1': ('data-scenes', 'aruco1'),
+    'scene:aruco2': ('data-scenes', 'aruco2'),
+    'scene:aruco4': ('data-scenes', 'aruco4'),
+    'scene:apriltag1': ('data-scenes', 'apriltag1'),
+    'scene:apriltag2': ('data-scenes', 'apriltag2'),
+    'scene:apriltag4': ('data-scenes', 'apriltag4'),
+    'sensor:insta360-x5': ('data-sensors', 'insta360-x5'),
+    'sensor:insight9': ('data-sensors', 'insight9'),
+}
+for label, (attr, token) in checks.items():
+    count=sum(token in c.get(attr,'').split() for c in cards)
+    print(label, count)
+PY
+python3 - <<'PY'
+from pathlib import Path
+from bs4 import BeautifulSoup
+soup=BeautifulSoup(Path('index.html').read_text(encoding='utf-8'), 'html.parser')
+cards=soup.select('.task-card')
+def visible_count(group, token):
+    n=0
+    for card in cards:
+        cat=card.get('data-category','')
+        scenes=card.get('data-scenes','').split()
+        sensors=card.get('data-sensors','').split()
+        if group == 'category':
+            ok = token == 'all' or cat == token
+        elif group == 'scene':
+            ok = token in scenes
+        else:
+            ok = token in sensors
+        n += int(ok)
+    return n
+for button in soup.select('.filter-chip'):
+    group=button.get('data-filter-group')
+    token=button.get('data-filter')
+    print(group, token, visible_count(group, token))
+PY
+python3 - <<'PY'
+import re
+from pathlib import Path
+from urllib.parse import urlsplit
+root=Path('/media/zjj/Elements/CQU_ZJJ/MILD')
+files=[root/'index.html', root/'static/css/site.css']
+missing=[]
+for f in files:
+    text=f.read_text(encoding='utf-8')
+    for m in re.findall(r'(?:src|href|content)="(static/[^"]+\.(?:jpg|jpeg|png|webp|css|js)(?:\?[^"]*)?)"', text):
+        rel=urlsplit(m).path
+        if not (root/rel).exists():
+            missing.append((str(f.relative_to(root)), m))
+    for m in re.findall(r'url\("?\.\.\/images\/([^\)"\']+)"?\)', text):
+        rel=urlsplit(m).path
+        if not (root/'static/images'/rel).exists():
+            missing.append((str(f.relative_to(root)), 'static/images/'+m))
+print('missing_refs', len(missing))
+for item in missing:
+    print(item[0], item[1])
+PY
+rg -n "/home/zjj|/media/zjj|/mnt/|Elements|新加卷" index.html static/js/site.js static/css/site.css README.md || true
+git diff --check
+google-chrome --headless=new --no-sandbox --disable-gpu --hide-scrollbars --window-size=1440,9000 --screenshot=/tmp/mild_filter_fix.png file:///media/zjj/Elements/CQU_ZJJ/MILD/index.html
+git diff --stat
+git status --short
+```
+
+Validation results:
+
+- `node --check static/js/site.js`: success.
+- DOM/filter structure: `task_cards 15`, `filter_groups 3`,
+  `category_chips 6`, `scene_chips 8`, `sensor_chips 2`,
+  `scene_all_chips 0`, `sensor_all_chips 0`.
+- Script cache-bust present: `static/js/site.js?v=20260714-filter-fix`.
+- Scene/Sensor data counts are nonzero:
+  `aruco2 6`, `apriltag2 6`, `insta360-x5 15`, `insight9 9`.
+- Simulated current filter matching gives nonzero counts for every visible
+  Scene/Sensor chip.
+- Static resource reference check: `missing_refs 0`.
+- Public files private absolute path scan: success, no output.
+- `git diff --check`: success.
+- Chrome headless screenshot rendered successfully at `/tmp/mild_filter_fix.png`.
+
+Safety boundary:
+
+- Website HTML/CSS/JS display-only adjustment.
+- Did not run Docker replay, robot control, collection, rosbag conversion, or
+  UMID data/pipeline writes.

@@ -770,25 +770,29 @@ h2 {
 .task-photo-b {
   background-color: #4d5b5c;
   background-image: url("../images/pic/task/Bookshelf01.jpg");
-  background-position: 50% 66%;
+  background-size: 96% auto;
+  background-position: 50% 74%;
 }
 
 .task-photo-c {
   background-color: #4f5f4b;
   background-image: url("../images/pic/task/Bookshelf02_02.jpg");
-  background-position: 50% 64%;
+  background-size: 96% auto;
+  background-position: 50% 72%;
 }
 
 .task-photo-d {
   background-color: #45505a;
   background-image: url("../images/pic/task/Box01.jpg");
-  background-position: 38% 64%;
+  background-size: 96% auto;
+  background-position: 38% 72%;
 }
 
 .task-photo-e {
   background-color: #5b4d43;
   background-image: url("../images/pic/task/Box02.jpg");
-  background-position: 50% 34%;
+  background-size: auto 150%;
+  background-position: 50% 24%;
 }
 
 .task-photo-f {
@@ -825,7 +829,8 @@ h2 {
 .task-photo-l {
   background-color: #5e5b50;
   background-image: url("../images/pic/task/Grab_Place06.jpg");
-  background-position: 50% 34%;
+  background-size: auto 150%;
+  background-position: 50% 24%;
 }
 
 .task-photo-m {
