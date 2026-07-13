@@ -794,3 +794,38 @@ Validation results:
 - Generated trajectory images are RGBA PNGs with alpha `(0, 255)`.
 - UMID root is not a git repository, so git diff validation was not available
   there; script validation used `py_compile`.
+
+## 11. Cache-Bust Trajectory Card Stylesheet
+
+Timestamp: 2026-07-13T17:33:00+08:00
+
+CWD: `/media/zjj/Elements/CQU_ZJJ/MILD`
+
+Reason: user reported that the `Current collected task scenes.` cards for
+`Analemma_2_t`, `Circular_2_t`, and `Zigzag_2_t` still appeared unchanged in the
+website. Local source and local Chrome rendering showed the task-card CSS
+already points to the generated trajectory PNGs, so the likely issue is stale
+browser/GitHub Pages CSS caching.
+
+Local evidence:
+
+- `static/css/site.css` maps:
+  - `.task-photo-a` to `../images/pic/trajectories/Analemma_2_t_trajectory_shape.png`
+  - `.task-photo-f` to `../images/pic/trajectories/Circular_2_t_trajectory_shape.png`
+  - `.task-photo-o` to `../images/pic/trajectories/Zigzag_2_t_trajectory_shape.png`
+- `git ls-files` includes all four files under
+  `static/images/pic/trajectories/`.
+- A local Chrome headless long screenshot from `http://127.0.0.1:8027/` showed
+  the task section rendering the trajectory shapes for the visible motion cards.
+
+Edit:
+
+- Changed the stylesheet link in `index.html` from `static/css/site.css` to
+  `static/css/site.css?v=20260713-trajectory-shapes` to force browsers to fetch
+  the updated CSS after deployment.
+
+Safety boundary:
+
+- Website static HTML edit only.
+- Did not run Docker replay, robot control, collection, rosbag conversion, or
+  UMID data/pipeline writes.
