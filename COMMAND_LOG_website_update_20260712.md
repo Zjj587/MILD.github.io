@@ -1160,3 +1160,150 @@ Safety boundary:
 - Website CSS-only visual adjustment.
 - Did not run Docker replay, robot control, collection, rosbag conversion, or
   UMID data/pipeline writes.
+
+## 16. Further compact public section headings and bust CSS cache
+
+Timestamp: 2026-07-13T18:45:00+08:00
+
+Reason: user reported that the previous heading-scale change was still not
+visibly enough for titles including `One task scene expands into many
+localization sequences.`, `Wide-view motion with stereo depth support.`, and
+`Task axes, scene axes, and release organization.` The page also had an older
+CSS query string, so browsers or GitHub Pages could continue serving a cached
+stylesheet.
+
+Edits:
+
+- `index.html`
+  - Updated stylesheet query string to
+    `static/css/site.css?v=20260713-compact-headings`.
+- `static/css/site.css`
+  - Reduced section `h2` sizing again from
+    `clamp(1.6rem, 3.2vw, 2.8rem)` to
+    `clamp(1.35rem, 2.1vw, 2.05rem)`.
+  - Reduced `h2` max width from `720px` to `680px`.
+  - Increased line-height from `1.08` to `1.14`.
+
+Commands and checks:
+
+```bash
+/home/zjj/.cache/agibot/live_shared_memory/team_deep_preflight.sh nova
+sed -n '1,45p' index.html && nl -ba static/css/site.css | sed -n '250,264p'
+rg -n "<link|site.css|^h2 \\{|section h2|font-size: clamp\\(" index.html static/css/site.css
+node --check static/js/site.js
+python3 - <<'PY'
+import re
+from pathlib import Path
+from urllib.parse import urlsplit
+root=Path('/media/zjj/Elements/CQU_ZJJ/MILD')
+files=[root/'index.html', root/'static/css/site.css']
+missing=[]
+for f in files:
+    text=f.read_text(encoding='utf-8')
+    for m in re.findall(r'(?:src|href|content)="(static/[^"]+\.(?:jpg|jpeg|png|webp|css|js)(?:\?[^"]*)?)"', text):
+        rel=urlsplit(m).path
+        if not (root/rel).exists():
+            missing.append((str(f.relative_to(root)), m))
+    for m in re.findall(r'url\("?\.\.\/images\/([^\)"\']+)"?\)', text):
+        rel=urlsplit(m).path
+        if not (root/'static/images'/rel).exists():
+            missing.append((str(f.relative_to(root)), 'static/images/'+m))
+print('missing_refs', len(missing))
+for item in missing:
+    print(item[0], item[1])
+PY
+rg -n "/home/zjj|/media/zjj|/mnt/|Elements|新加卷" index.html static/js/site.js static/css/site.css README.md || true
+git diff --check
+nl -ba index.html | sed -n '20,26p'; nl -ba static/css/site.css | sed -n '256,262p'
+date --iso-8601=seconds
+git diff --stat
+git status --short
+```
+
+Validation results:
+
+- `node --check static/js/site.js`: success.
+- Static resource reference check: `missing_refs 0`.
+- Public files private absolute path scan: success, no output.
+- `git diff --check`: success.
+- Confirmed stylesheet query string and compact `h2` rule in local source.
+
+Safety boundary:
+
+- Website HTML/CSS display-only adjustment.
+- Did not run Docker replay, robot control, collection, rosbag conversion, or
+  UMID data/pipeline writes.
+
+## 17. Remove duplicate collected-summary cards
+
+Timestamp: 2026-07-13T18:48:48+08:00
+
+Reason: user reported that the top metric strip (`15 benchmark tasks`, `6 scene
+settings / task`, `2 sensors`, `88 usable sensor sequences`) repeated the same
+information again in the collected section. The intended structure is now:
+top metrics for quick numeric summary, then a task-level inventory table for
+details.
+
+Edits:
+
+- `index.html`
+  - Changed nav label from `Dataset Snapshot` to `Inventory`.
+  - Replaced collected-section heading with `Inventory` /
+    `Collected task inventory.`
+  - Removed the four duplicate collected snapshot cards.
+  - Changed the inventory panel heading to `Usable sequence table` and revised
+    its supporting copy to explain that the summary numbers appear once above.
+- `static/css/site.css`
+  - Removed unused `.snapshot-grid` and `.snapshot-card` styles.
+  - Removed `.snapshot-grid` from responsive grid rules.
+
+Commands and checks:
+
+```bash
+/home/zjj/.cache/agibot/live_shared_memory/team_deep_preflight.sh nova
+sed -n '60,95p' index.html; sed -n '260,325p' index.html
+rg -n "benchmark tasks|scene settings / task|sensor design|usable sensor sequences|snapshot-grid|Collected scenarios|Dataset Snapshot" index.html static/js/site.js static/css/site.css README.md
+rg -n "Collected scenarios distilled|snapshot-grid|snapshot-card|sensor design|67 Insta360 X5 \\+ 21|Motion patterns, bookshelf|Dataset Snapshot" index.html static/js/site.js static/css/site.css README.md || true
+node --check static/js/site.js
+python3 - <<'PY'
+import re
+from pathlib import Path
+from urllib.parse import urlsplit
+root=Path('/media/zjj/Elements/CQU_ZJJ/MILD')
+files=[root/'index.html', root/'static/css/site.css']
+missing=[]
+for f in files:
+    text=f.read_text(encoding='utf-8')
+    for m in re.findall(r'(?:src|href|content)="(static/[^"]+\.(?:jpg|jpeg|png|webp|css|js)(?:\?[^"]*)?)"', text):
+        rel=urlsplit(m).path
+        if not (root/rel).exists():
+            missing.append((str(f.relative_to(root)), m))
+    for m in re.findall(r'url\("?\.\.\/images\/([^\)"\']+)"?\)', text):
+        rel=urlsplit(m).path
+        if not (root/'static/images'/rel).exists():
+            missing.append((str(f.relative_to(root)), 'static/images/'+m))
+print('missing_refs', len(missing))
+for item in missing:
+    print(item[0], item[1])
+PY
+rg -n "/home/zjj|/media/zjj|/mnt/|Elements|新加卷" index.html static/js/site.js static/css/site.css README.md || true
+git diff --check
+date --iso-8601=seconds
+git diff --stat
+git status --short
+nl -ba index.html | sed -n '32,40p;264,306p'
+```
+
+Validation results:
+
+- Duplicate collected-summary text scan: success, no output.
+- `node --check static/js/site.js`: success.
+- Static resource reference check: `missing_refs 0`.
+- Public files private absolute path scan: success, no output.
+- `git diff --check`: success.
+
+Safety boundary:
+
+- Website HTML/CSS display-only adjustment.
+- Did not run Docker replay, robot control, collection, rosbag conversion, or
+  UMID data/pipeline writes.

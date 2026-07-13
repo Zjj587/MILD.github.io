@@ -21,7 +21,7 @@
     >
     <meta property="og:image" content="static/images/pic/scenes/apriltag4.jpg">
     <link rel="preload" href="static/images/pic/scenes/apriltag4.jpg" as="image">
-    <link rel="stylesheet" href="static/css/site.css?v=20260713-public-task-cards">
+    <link rel="stylesheet" href="static/css/site.css?v=20260713-compact-headings">
   </head>
   <body>
     <header class="site-header">
@@ -34,7 +34,7 @@
         <a href="#benchmark">Benchmark</a>
         <a href="#sensors">Sensors</a>
         <a href="#sequences">Sequences</a>
-        <a href="#collected">Dataset Snapshot</a>
+        <a href="#collected">Inventory</a>
         <a href="#tasks">Tasks</a>
         <a href="#release">Release</a>
         <a href="#citation">Citation</a>
@@ -264,41 +264,17 @@
       <section class="section collected-section" id="collected">
         <div class="section-inner">
           <div class="section-heading">
-            <p class="section-kicker">Dataset Snapshot</p>
-            <h2>Collected scenarios distilled into release-facing structure.</h2>
-          </div>
-
-          <div class="snapshot-grid" aria-label="Collected dataset summary">
-            <article class="snapshot-card">
-              <span>15</span>
-              <strong>benchmark tasks</strong>
-              <p>Motion patterns, bookshelf retrieval, box retrieval, desktop pick-and-place, and table wiping.</p>
-            </article>
-            <article class="snapshot-card">
-              <span>6</span>
-              <strong>scene settings / task</strong>
-              <p>table, tablecloth, ArUco 2/4, AprilTag 2/4.</p>
-            </article>
-            <article class="snapshot-card">
-              <span>2</span>
-              <strong>sensor design</strong>
-              <p>Insta360 X5 covers wide-view VIO; Insight9 adds stereo depth cues.</p>
-            </article>
-            <article class="snapshot-card">
-              <span>88</span>
-              <strong>usable sensor sequences</strong>
-              <p>67 Insta360 X5 + 21 Insight9 valid sensor streams.</p>
-            </article>
+            <p class="section-kicker">Inventory</p>
+            <h2>Collected task inventory.</h2>
           </div>
 
           <div class="inventory-panel">
             <div class="inventory-header">
               <div>
-                <h3>Collected Task Inventory</h3>
+                <h3>Usable sequence table</h3>
                 <p>
-                  This table reflects the current benchmark task organization. Insight9 availability
-                  follows the project rule: left/right grayscale images, IMU, and time-sync index
-                  are required. Only usable Insight9 variants are listed.
+                  The summary numbers are shown once above; this table focuses on task-level
+                  variants, sensor availability, and the Insight9 sequences that pass the usable-data rule.
                 </p>
               </div>
               <span id="inventoryCount">15 tasks</span>

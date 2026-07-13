@@ -254,10 +254,10 @@ h1 {
 }
 
 h2 {
-  max-width: 720px;
+  max-width: 680px;
   margin: 0;
-  font-size: clamp(1.6rem, 3.2vw, 2.8rem);
-  line-height: 1.08;
+  font-size: clamp(1.35rem, 2.1vw, 2.05rem);
+  line-height: 1.14;
   letter-spacing: 0;
 }
 
@@ -491,42 +491,6 @@ h2 {
 
 .collected-section {
   background: #f7f0e6;
-}
-
-.snapshot-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px;
-  margin-bottom: 20px;
-}
-
-.snapshot-card {
-  min-height: 168px;
-  padding: 20px;
-  border: 1px solid #e2d5c1;
-  border-radius: 8px;
-  background: var(--white);
-}
-
-.snapshot-card span {
-  display: block;
-  margin-bottom: 10px;
-  color: var(--coral);
-  font-size: clamp(2rem, 4vw, 3.2rem);
-  font-weight: 850;
-  line-height: 1;
-}
-
-.snapshot-card strong {
-  display: block;
-  margin-bottom: 8px;
-  font-size: 1rem;
-}
-
-.snapshot-card p {
-  margin: 0;
-  color: var(--muted);
-  font-size: 0.92rem;
 }
 
 .inventory-panel {
@@ -1060,7 +1024,6 @@ code {
   .feature-grid,
   .sensor-grid,
   .variant-grid,
-  .snapshot-grid,
   .task-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -1110,7 +1073,6 @@ code {
   .feature-grid,
   .sensor-grid,
   .variant-grid,
-  .snapshot-grid,
   .task-grid {
     grid-template-columns: 1fr;
   }
