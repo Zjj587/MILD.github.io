@@ -436,3 +436,89 @@ Verification results:
 - Remaining image files under `static/images/` are only `static/images/captured/*.jpg`.
 - `git status --short`: modified `README.md`, `index.html`,
   `static/css/site.css`, `static/js/site.js`; deleted old generated PNG assets.
+
+## 8. Simplify public summary metrics and spell out Insta360 X5
+
+Timestamp: 2026-07-13T16:17:17+08:00
+
+CWD: `/media/zjj/Elements/CQU_ZJJ/MILD`
+
+Reason: user clarified that `X5 + Insight9 usable` and `9 Insight9 scenes` are
+confusing for the public website. The requested public summary should focus on
+task count, maximum scene variants per task, sensor count, and total usable
+sensor sequences. User also requested that visible X5 wording use the full
+`Insta360 X5` name. This was a website/static-display edit only. No robot
+control, Docker replay, collection, rosbag conversion, or UMID pipeline write
+was run.
+
+Commands and checks:
+
+```bash
+/home/zjj/.cache/agibot/live_shared_memory/team_deep_preflight.sh nova
+rg -n "X5|Insight9 scenes|X5 \+ Insight9 usable|v0 collected scenes|usable variants|sensor sequences|scene variants|snapshot-card|metric-strip|inventoryCount|X5\+I9|X5 Usable|X5\+I9" index.html static/js/site.js README.md static/css/site.css
+sed -n '60,110p' index.html
+sed -n '260,315p' index.html
+sed -n '340,610p' index.html
+sed -n '1,320p' static/js/site.js
+git status --short
+rg -n "tag-row|task-body|task-card|sensor-topline" static/css/site.css
+sed -n '928,948p' static/css/site.css
+sed -n '1138,1160p' static/css/site.css
+```
+
+Edits:
+
+- `index.html`: replaced top metrics with `15 v0 collected tasks`, `7 max scene
+  variants / task`, `2 sensors`, and `88 usable sensor sequences`; removed the
+  public `X5 + Insight9 usable` and `Insight9 scenes` snapshot cards; updated
+  card/table wording from short `X5` to full `Insta360 X5`; changed dual-sensor
+  task-card chips from `X5+I9` to `dual-sensor`.
+- `static/js/site.js`: renamed the data field from `x5Raw` to
+  `insta360Usable`; changed dynamic task count to `collected task(s)`; changed
+  the inventory summary to `15 tasks / 67 variants / 88 sensor sequences`.
+- `static/css/site.css`: widened sensor-topline badges so `Insta360 X5` and
+  `Insight9` fit cleanly.
+- `README.md`: synchronized the public summary wording to 15 task folders, up
+  to 7 scene variants per task, 2 sensors, and 88 usable sensor sequences.
+
+Validation:
+
+```bash
+rg --pcre2 -n "(?<!Insta360 )\bX5\b|X5\+I9|X5 \+ Insight9|Insight9 scenes|scenes with Insight9|x5Raw|\bx5\b" index.html static/js/site.js README.md static/css/site.css || true
+rg -n "15 task|7 scene|2 sensor|88 usable|usable sensor sequences|Collected Task Inventory|Insta360 X5 Usable|sensorSequences|collected task" index.html static/js/site.js README.md
+node --check static/js/site.js
+python3 - <<'PY'
+import re
+from pathlib import Path
+root=Path('/media/zjj/Elements/CQU_ZJJ/MILD')
+files=[root/'index.html', root/'static/css/site.css']
+missing=[]
+for f in files:
+    text=f.read_text(encoding='utf-8')
+    for m in re.findall(r'(?:src|href)="(static/[^"]+\.(?:jpg|jpeg|png|webp|css|js))"', text):
+        if not (root/m).exists():
+            missing.append((str(f.relative_to(root)), m))
+    for m in re.findall(r'url\("?\.\.\/images\/([^\)"\']+)"?\)', text):
+        if not (root/'static/images'/m).exists():
+            missing.append((str(f.relative_to(root)), 'static/images/'+m))
+print('missing_refs', len(missing))
+for item in missing:
+    print(item[0], item[1])
+PY
+rg -n "/home/zjj|/media/zjj|/mnt/|Elements|新加卷" index.html static/js/site.js static/css/site.css README.md || true
+git diff --check
+git diff --stat
+git status --short
+git diff -- index.html static/js/site.js static/css/site.css README.md | sed -n '1,260p'
+date --iso-8601=seconds
+```
+
+Verification results:
+
+- Standalone short `X5`, `x5`, `X5+I9`, `X5 + Insight9`, `Insight9 scenes`,
+  and `x5Raw` scan over public source files: success, no output.
+- New summary wording scan: success, expected lines found.
+- `node --check static/js/site.js`: success.
+- Static resource reference check: `missing_refs 0`.
+- Public files private absolute path scan: success, no output.
+- `git diff --check`: success.

@@ -8,9 +8,9 @@ This repository hosts the static GitHub Pages website for the MILD benchmark.
 
 - Static HTML/CSS/JS only; no build step is required.
 - The overview and `v0 Snapshot` section summarize the current pre-release
-  collected data inventory: 15 scene folders, 67 usable Insta360 X5 sequence
-  variants, 21 X5 + Insight9 usable variants, and 9 scenes with usable Insight9.
-- The task explorer mirrors the current 15 collected v0 scene folders.
+  collected data inventory: 15 task folders, up to 7 scene variants per task,
+  2 sensors, and 88 usable sensor sequences.
+- The task explorer mirrors the current 15 collected v0 task folders.
 - Captured website previews are stored under `static/images/captured/` and are
   derived from the approved v0 `pic` assets.
 - Large raw data, rosbag files, frame dumps, and calibration artifacts are not

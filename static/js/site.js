@@ -27,7 +27,7 @@ const collectedScenes = [
     name: "Analemma_2_t",
     variantCount: 6,
     variants: "orin, tablecloth, ArUco 2/4, AprilTag Custom48h12 2/4",
-    x5Raw: 6,
+    insta360Usable: 6,
     insight9Usable: 3,
     insight9Variants: "orin, tablecloth, ArUco 4",
   },
@@ -35,7 +35,7 @@ const collectedScenes = [
     name: "Bookshelf01_2",
     variantCount: 5,
     variants: "orin, ArUco 2/4, AprilTag Custom48h12 2/4",
-    x5Raw: 5,
+    insta360Usable: 5,
     insight9Usable: 2,
     insight9Variants: "orin, ArUco 4",
   },
@@ -43,7 +43,7 @@ const collectedScenes = [
     name: "Bookshelf02_2",
     variantCount: 6,
     variants: "orin, tablecloth, ArUco 2/4, AprilTag Custom48h12 2/4",
-    x5Raw: 6,
+    insta360Usable: 6,
     insight9Usable: 2,
     insight9Variants: "orin, ArUco 4",
   },
@@ -51,7 +51,7 @@ const collectedScenes = [
     name: "Box01",
     variantCount: 3,
     variants: "orin, ArUco 4, AprilTag Custom48h12 4",
-    x5Raw: 3,
+    insta360Usable: 3,
     insight9Usable: 1,
     insight9Variants: "ArUco 4",
   },
@@ -59,7 +59,7 @@ const collectedScenes = [
     name: "Box02",
     variantCount: 3,
     variants: "orin, ArUco 4, AprilTag Custom48h12 4",
-    x5Raw: 3,
+    insta360Usable: 3,
     insight9Usable: 2,
     insight9Variants: "orin, ArUco 4",
   },
@@ -67,7 +67,7 @@ const collectedScenes = [
     name: "Circular_2_t",
     variantCount: 6,
     variants: "orin, tablecloth, ArUco 2/4, AprilTag Custom48h12 2/4",
-    x5Raw: 6,
+    insta360Usable: 6,
     insight9Usable: 3,
     insight9Variants: "orin, tablecloth, ArUco 4",
   },
@@ -75,7 +75,7 @@ const collectedScenes = [
     name: "Grab_Place01_t",
     variantCount: 4,
     variants: "orin, tablecloth, ArUco 4, AprilTag Custom48h12 4",
-    x5Raw: 4,
+    insta360Usable: 4,
     insight9Usable: 1,
     insight9Variants: "orin",
   },
@@ -83,7 +83,7 @@ const collectedScenes = [
     name: "Grab_Place02_t",
     variantCount: 4,
     variants: "orin, tablecloth, ArUco 4, AprilTag Custom48h12 4",
-    x5Raw: 4,
+    insta360Usable: 4,
     insight9Usable: 0,
     insight9Variants: "none",
   },
@@ -91,7 +91,7 @@ const collectedScenes = [
     name: "Grab_Place03_t",
     variantCount: 4,
     variants: "orin, tablecloth, ArUco 4, AprilTag Custom48h12 4",
-    x5Raw: 4,
+    insta360Usable: 4,
     insight9Usable: 0,
     insight9Variants: "none",
   },
@@ -99,7 +99,7 @@ const collectedScenes = [
     name: "Grab_Place04",
     variantCount: 3,
     variants: "orin, ArUco 4, AprilTag Custom48h12 4",
-    x5Raw: 3,
+    insta360Usable: 3,
     insight9Usable: 0,
     insight9Variants: "none",
   },
@@ -107,7 +107,7 @@ const collectedScenes = [
     name: "Grab_Place05",
     variantCount: 3,
     variants: "orin, ArUco 4, AprilTag Custom48h12 4",
-    x5Raw: 3,
+    insta360Usable: 3,
     insight9Usable: 0,
     insight9Variants: "none",
   },
@@ -115,7 +115,7 @@ const collectedScenes = [
     name: "Grab_Place06_t",
     variantCount: 4,
     variants: "orin, tablecloth, ArUco 4, AprilTag Custom48h12 4",
-    x5Raw: 4,
+    insta360Usable: 4,
     insight9Usable: 0,
     insight9Variants: "none",
   },
@@ -123,7 +123,7 @@ const collectedScenes = [
     name: "Wiping01",
     variantCount: 3,
     variants: "orin, ArUco 4, AprilTag Custom48h12 4",
-    x5Raw: 3,
+    insta360Usable: 3,
     insight9Usable: 0,
     insight9Variants: "none",
   },
@@ -131,7 +131,7 @@ const collectedScenes = [
     name: "Wiping02_1",
     variantCount: 7,
     variants: "orin, ArUco 1/2/4, AprilTag Custom48h12 1/2/4",
-    x5Raw: 7,
+    insta360Usable: 7,
     insight9Usable: 2,
     insight9Variants: "orin, ArUco 4",
   },
@@ -139,7 +139,7 @@ const collectedScenes = [
     name: "Zigzag_2_t",
     variantCount: 6,
     variants: "orin, tablecloth, ArUco 2/4, AprilTag Custom48h12 2/4",
-    x5Raw: 6,
+    insta360Usable: 6,
     insight9Usable: 5,
     insight9Variants: "orin, tablecloth, ArUco 2/4, AprilTag 2",
   },
@@ -167,7 +167,7 @@ function updateTasks() {
   });
 
   if (taskCount) {
-    taskCount.textContent = `Showing ${visibleCount} collected scene${visibleCount === 1 ? "" : "s"}`;
+    taskCount.textContent = `Showing ${visibleCount} collected task${visibleCount === 1 ? "" : "s"}`;
   }
 }
 
@@ -265,8 +265,8 @@ function renderCollectedInventory() {
     const variants = document.createElement("td");
     variants.textContent = scene.variants;
 
-    const x5Raw = document.createElement("td");
-    x5Raw.appendChild(createStatusBadge(`${scene.x5Raw}/${scene.variantCount} usable`, "good"));
+    const insta360 = document.createElement("td");
+    insta360.appendChild(createStatusBadge(`${scene.insta360Usable}/${scene.variantCount} usable`, "good"));
 
     const insight = document.createElement("td");
     if (scene.insight9Usable > 0) {
@@ -281,14 +281,16 @@ function renderCollectedInventory() {
     const notes = document.createElement("td");
     notes.textContent = scene.insight9Variants === "none" ? "-" : scene.insight9Variants;
 
-    row.append(name, variants, x5Raw, insight, notes);
+    row.append(name, variants, insta360, insight, notes);
     tableBody.appendChild(row);
   });
 
   if (inventoryCount) {
     const totalVariants = collectedScenes.reduce((sum, scene) => sum + scene.variantCount, 0);
+    const insta360Sequences = collectedScenes.reduce((sum, scene) => sum + scene.insta360Usable, 0);
     const insightVariants = collectedScenes.reduce((sum, scene) => sum + scene.insight9Usable, 0);
-    inventoryCount.textContent = `${collectedScenes.length} scenes / ${totalVariants} X5 usable / ${insightVariants} X5+I9 usable`;
+    const sensorSequences = insta360Sequences + insightVariants;
+    inventoryCount.textContent = `${collectedScenes.length} tasks / ${totalVariants} variants / ${sensorSequences} sensor sequences`;
   }
 }
 
