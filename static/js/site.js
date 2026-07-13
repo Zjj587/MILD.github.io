@@ -245,6 +245,237 @@ function createStatusBadge(text, tone = "neutral") {
   return badge;
 }
 
+const sensorCatalog = {
+  "Insta360 X5": {
+    role: "Wide-view VIO stream",
+    signals: "Dual fisheye video, IMU, timestamps, and exposure metadata.",
+  },
+  Insight9: {
+    role: "Stereo companion stream",
+    signals: "Left/right grayscale images, IMU, and time-sync index.",
+  },
+};
+
+function expandVariantList(value) {
+  if (!value || normalize(value) === "none") return [];
+
+  return value.split(",").flatMap((item) => {
+    const label = item.trim().replace(/\.$/, "");
+    if (!label) return [];
+
+    const markerMatch = label.match(/^(.*?)(\d+(?:\/\d+)*)$/);
+    if (!markerMatch) return [label];
+
+    const prefix = markerMatch[1].trim();
+    return markerMatch[2].split("/").map((count) => `${prefix} ${count}`);
+  });
+}
+
+function sceneKey(value) {
+  return normalize(value)
+    .replace(/custom48h12/g, "")
+    .replace(/[^a-z0-9]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function buildSceneEntries(task) {
+  const insightScenes = new Set(expandVariantList(task.insight9Variants).map(sceneKey));
+
+  return expandVariantList(task.variants).map((sceneName) => {
+    const sensors = ["Insta360 X5"];
+    if (insightScenes.has(sceneKey(sceneName))) {
+      sensors.push("Insight9");
+    }
+    return { name: sceneName, sensors };
+  });
+}
+
+function createTaskDetailDialog() {
+  const dialog = document.createElement("dialog");
+  dialog.className = "task-detail-dialog";
+  dialog.innerHTML = `
+    <div class="task-detail-shell">
+      <div class="task-detail-visual">
+        <div class="task-detail-photo" aria-hidden="true"></div>
+      </div>
+      <div class="task-detail-content">
+        <div class="task-detail-header">
+          <div>
+            <p class="section-kicker task-detail-kicker"></p>
+            <h3 class="task-detail-title"></h3>
+            <p class="task-detail-summary"></p>
+          </div>
+          <button class="detail-close" type="button">Close</button>
+        </div>
+        <div class="task-detail-stats"></div>
+        <div class="task-detail-columns">
+          <div>
+            <h4>Scenes</h4>
+            <div class="scene-list"></div>
+          </div>
+          <div>
+            <h4>Sensors</h4>
+            <div class="sensor-detail">
+              <strong class="sensor-detail-title"></strong>
+              <p class="sensor-detail-meta"></p>
+              <div class="sensor-list"></div>
+              <p class="sensor-detail-note"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(dialog);
+  return dialog;
+}
+
+const taskDetailDialog = createTaskDetailDialog();
+const taskDetailRefs = {
+  photo: taskDetailDialog.querySelector(".task-detail-photo"),
+  kicker: taskDetailDialog.querySelector(".task-detail-kicker"),
+  title: taskDetailDialog.querySelector(".task-detail-title"),
+  summary: taskDetailDialog.querySelector(".task-detail-summary"),
+  stats: taskDetailDialog.querySelector(".task-detail-stats"),
+  sceneList: taskDetailDialog.querySelector(".scene-list"),
+  sensorTitle: taskDetailDialog.querySelector(".sensor-detail-title"),
+  sensorMeta: taskDetailDialog.querySelector(".sensor-detail-meta"),
+  sensorList: taskDetailDialog.querySelector(".sensor-list"),
+  sensorNote: taskDetailDialog.querySelector(".sensor-detail-note"),
+  close: taskDetailDialog.querySelector(".detail-close"),
+};
+
+let lastTaskTrigger = null;
+
+function copyTaskPhotoStyle(source) {
+  if (!source || !taskDetailRefs.photo) return;
+  const style = window.getComputedStyle(source);
+  taskDetailRefs.photo.style.backgroundColor = style.backgroundColor;
+  taskDetailRefs.photo.style.backgroundImage = style.backgroundImage;
+  taskDetailRefs.photo.style.backgroundPosition = style.backgroundPosition;
+  taskDetailRefs.photo.style.backgroundRepeat = style.backgroundRepeat;
+  taskDetailRefs.photo.style.backgroundSize = style.backgroundSize;
+}
+
+function renderSensorDetail(scene) {
+  taskDetailRefs.sensorTitle.textContent = scene.name;
+  taskDetailRefs.sensorMeta.textContent = `${scene.sensors.length} usable sensor stream${scene.sensors.length === 1 ? "" : "s"}`;
+  taskDetailRefs.sensorList.replaceChildren();
+
+  scene.sensors.forEach((sensorName) => {
+    const sensor = sensorCatalog[sensorName];
+    const card = document.createElement("article");
+    card.className = "detail-sensor-card";
+
+    const top = document.createElement("div");
+    top.className = "detail-sensor-top";
+
+    const title = document.createElement("strong");
+    title.textContent = sensorName;
+
+    top.append(title, createStatusBadge("usable", "good"));
+
+    const role = document.createElement("span");
+    role.textContent = sensor.role;
+
+    const signals = document.createElement("p");
+    signals.textContent = sensor.signals;
+
+    card.append(top, role, signals);
+    taskDetailRefs.sensorList.appendChild(card);
+  });
+
+  taskDetailRefs.sensorNote.textContent = scene.sensors.includes("Insight9")
+    ? "This scene contains both the wide-view VIO stream and the stereo companion stream."
+    : "Only the public usable Insta360 X5 stream is listed for this scene.";
+}
+
+function renderSceneOptions(scenes) {
+  taskDetailRefs.sceneList.replaceChildren();
+
+  scenes.forEach((scene, index) => {
+    const button = document.createElement("button");
+    button.className = "scene-option";
+    button.type = "button";
+    button.setAttribute("aria-pressed", index === 0 ? "true" : "false");
+
+    const name = document.createElement("strong");
+    name.textContent = scene.name;
+
+    const sensors = document.createElement("span");
+    sensors.textContent = scene.sensors.join(" + ");
+
+    button.append(name, sensors);
+    button.addEventListener("click", () => {
+      taskDetailRefs.sceneList.querySelectorAll(".scene-option").forEach((item) => {
+        item.classList.toggle("is-active", item === button);
+        item.setAttribute("aria-pressed", item === button ? "true" : "false");
+      });
+      renderSensorDetail(scene);
+    });
+
+    if (index === 0) {
+      button.classList.add("is-active");
+      renderSensorDetail(scene);
+    }
+
+    taskDetailRefs.sceneList.appendChild(button);
+  });
+}
+
+function openTaskDetail(card) {
+  const taskName = card.querySelector("h3")?.textContent.trim();
+  const task = collectedScenes.find((item) => item.name === taskName);
+  if (!task) return;
+
+  const taskNumber = card.querySelector(".task-topline span")?.textContent.trim() || "";
+  const taskCategory = card.querySelector(".task-topline strong")?.textContent.trim() || "";
+  const taskSummary = card.querySelector(".task-body > p")?.textContent.trim() || "";
+  const photo = card.querySelector(".task-photo");
+  const scenes = buildSceneEntries(task);
+
+  lastTaskTrigger = photo;
+  copyTaskPhotoStyle(photo);
+  taskDetailRefs.kicker.textContent = `${taskNumber} ${taskCategory}`.trim();
+  taskDetailRefs.title.textContent = task.name;
+  taskDetailRefs.summary.textContent = taskSummary;
+  taskDetailRefs.stats.replaceChildren(
+    createStatusBadge(`${scenes.length} scenes`, "neutral"),
+    createStatusBadge(`${task.insta360Usable} Insta360 X5`, "good"),
+    task.insight9Usable > 0
+      ? createStatusBadge(`${task.insight9Usable} Insight9`, "good")
+      : createStatusBadge("Insta360 X5 only", "neutral"),
+  );
+  renderSceneOptions(scenes);
+
+  if (typeof taskDetailDialog.showModal === "function") {
+    taskDetailDialog.showModal();
+  } else {
+    taskDetailDialog.setAttribute("open", "");
+  }
+}
+
+function closeTaskDetail() {
+  if (typeof taskDetailDialog.close === "function" && taskDetailDialog.open) {
+    taskDetailDialog.close();
+  } else {
+    taskDetailDialog.removeAttribute("open");
+  }
+}
+
+taskDetailRefs.close.addEventListener("click", closeTaskDetail);
+taskDetailDialog.addEventListener("click", (event) => {
+  if (event.target === taskDetailDialog) closeTaskDetail();
+});
+taskDetailDialog.addEventListener("close", () => {
+  lastTaskTrigger?.focus();
+});
+
+cards.forEach((card) => {
+  card.querySelector(".task-photo")?.addEventListener("click", () => openTaskDetail(card));
+});
+
 function renderCollectedInventory() {
   const tableBody = document.querySelector("#collectedInventory");
   const inventoryCount = document.querySelector("#inventoryCount");

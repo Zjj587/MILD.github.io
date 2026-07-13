@@ -1307,3 +1307,105 @@ Safety boundary:
 - Website HTML/CSS display-only adjustment.
 - Did not run Docker replay, robot control, collection, rosbag conversion, or
   UMID data/pipeline writes.
+
+## 18. Add task-to-scene-to-sensor drilldown
+
+Timestamp: 2026-07-13T19:28:39+08:00
+
+Reason: user asked to improve the task explorer so that each task image frame
+can be clicked to enter a task view, each scene can be selected, and the page
+can show which sensors are included for that scene.
+
+Edits:
+
+- `index.html`
+  - Updated CSS query string to `20260713-task-drilldown`.
+  - Renamed task search label from `Search scenes` to `Search tasks`.
+  - Converted all 15 `.task-photo` elements from static `div` elements to
+    accessible `button` elements with task-specific scene-detail labels.
+- `static/js/site.js`
+  - Added variant expansion logic so strings such as `ArUco 2/4` and
+    `AprilTag Custom48h12 1/2/4` become individual scene entries.
+  - Added scene-key normalization so `AprilTag 2` matches
+    `AprilTag Custom48h12 2` for Insight9 availability.
+  - Added a task detail dialog generated from the existing `collectedScenes`
+    data, with scene buttons and a sensor panel.
+  - Reused the current usable-data rule: every listed scene has Insta360 X5;
+    Insight9 is shown only when the scene appears in `insight9Variants`.
+- `static/css/site.css`
+  - Added clickable task-photo states and a compact `Scenes` affordance.
+  - Added desktop and responsive styling for the task detail dialog, scene
+    list, and sensor detail cards.
+
+Commands and checks:
+
+```bash
+/home/zjj/.cache/agibot/live_shared_memory/team_deep_preflight.sh nova
+sed -n '320,590p' index.html
+sed -n '1,340p' static/js/site.js
+sed -n '640,780p' static/css/site.css; sed -n '1010,1120p' static/css/site.css
+sed -n '300,350p' index.html
+rg -n "status-badge|status-neutral|status-good|status-warn" static/css/site.css
+node --check static/js/site.js
+rg -n "<div class=\"task-photo|role=\"img\"|Search scenes|task-detail-dialog|scene-option|Open .* scenes|task-drilldown" index.html static/js/site.js static/css/site.css
+python3 - <<'PY'
+import re
+from pathlib import Path
+from urllib.parse import urlsplit
+root=Path('/media/zjj/Elements/CQU_ZJJ/MILD')
+files=[root/'index.html', root/'static/css/site.css']
+missing=[]
+for f in files:
+    text=f.read_text(encoding='utf-8')
+    for m in re.findall(r'(?:src|href|content)="(static/[^"]+\.(?:jpg|jpeg|png|webp|css|js)(?:\?[^"]*)?)"', text):
+        rel=urlsplit(m).path
+        if not (root/rel).exists():
+            missing.append((str(f.relative_to(root)), m))
+    for m in re.findall(r'url\("?\.\.\/images\/([^\)"\']+)"?\)', text):
+        rel=urlsplit(m).path
+        if not (root/'static/images'/rel).exists():
+            missing.append((str(f.relative_to(root)), 'static/images/'+m))
+print('missing_refs', len(missing))
+for item in missing:
+    print(item[0], item[1])
+PY
+rg -n "/home/zjj|/media/zjj|/mnt/|Elements|新加卷" index.html static/js/site.js static/css/site.css README.md || true
+git diff --check
+tail -n 35 index.html
+python3 - <<'PY'
+from pathlib import Path
+from bs4 import BeautifulSoup
+soup = BeautifulSoup(Path('index.html').read_text(encoding='utf-8'), 'html.parser')
+print('task_photo_buttons', len(soup.select('button.task-photo')))
+print('task_photo_divs', len(soup.select('div.task-photo')))
+print('task_cards', len(soup.select('.task-card')))
+print('search_label', soup.select_one('.task-search span').get_text(strip=True))
+print('stylesheet', soup.select_one('link[rel="stylesheet"]')['href'])
+print('script_tags', [s.get('src') for s in soup.select('script')])
+PY
+rg -n "function expandVariantList|function buildSceneEntries|function openTaskDetail|cards.forEach\\(\\(card\\).*task-photo|renderCollectedInventory\\(\\)" static/js/site.js
+node -e "try { require('playwright'); console.log('playwright available') } catch (err) { console.log('playwright missing') }"
+node -e "try { require('puppeteer'); console.log('puppeteer available') } catch (err) { console.log('puppeteer missing') }"
+date --iso-8601=seconds
+git diff --stat
+git status --short
+git diff -- index.html static/js/site.js static/css/site.css | sed -n '1,260p'
+```
+
+Validation results:
+
+- `node --check static/js/site.js`: success.
+- Static resource reference check: `missing_refs 0`.
+- Public files private absolute path scan: success, no output.
+- `git diff --check`: success.
+- DOM structure check: `task_photo_buttons 15`, `task_photo_divs 0`,
+  `task_cards 15`, search label is `Search tasks`, stylesheet query string is
+  `static/css/site.css?v=20260713-task-drilldown`.
+- Browser automation note: local Node environment reports `playwright missing`
+  and `puppeteer missing`, so no real browser click screenshot was performed.
+
+Safety boundary:
+
+- Website HTML/CSS/JS display-only adjustment.
+- Did not run Docker replay, robot control, collection, rosbag conversion, or
+  UMID data/pipeline writes.
