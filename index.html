@@ -141,16 +141,16 @@
         <div class="section-inner">
           <div class="section-heading">
             <p class="section-kicker">Sensor Suite</p>
-            <h2>Sensor suite and calibration downloads.</h2>
+            <h2>Wide-view motion with stereo depth support.</h2>
           </div>
           <div class="sensor-grid" aria-label="Included camera sensors">
             <article class="sensor-card">
-              <div class="sensor-topline"><span>Insta360 X5</span><strong>Wide-FOV VIO stream</strong></div>
+              <div class="sensor-topline"><span>Insta360 X5</span><strong>Wide-view VIO stream</strong></div>
               <img class="sensor-photo" src="static/images/pic/sensor/instan360x5.jpg" alt="Insta360 X5 mounted for MILD collection">
-              <h3>Insta360 X5</h3>
+              <h3>Broad manipulation view</h3>
               <p>
-                Wearable or handheld camera stream for manipulation-centered visual-inertial
-                localization sequences.
+                Primary wearable or handheld stream for fast UMI-style motion. Its fisheye
+                overlap is limited, so Insight9 complements it with a dedicated stereo baseline.
               </p>
               <dl>
                 <dt>Signals</dt><dd>Dual fisheye video, IMU, timestamps, and exposure metadata.</dd>
@@ -164,12 +164,12 @@
             </article>
 
             <article class="sensor-card">
-              <div class="sensor-topline"><span>Insight9</span><strong>Companion camera stream</strong></div>
+              <div class="sensor-topline"><span>Insight9</span><strong>Stereo companion stream</strong></div>
               <img class="sensor-photo" src="static/images/pic/sensor/insight9.jpg" alt="Insight9 camera used in the MILD sensor suite">
-              <h3>Insight9</h3>
+              <h3>Depth and geometry support</h3>
               <p>
-                Companion camera source for sensor comparison, synchronized capture, and calibration
-                release alongside the manipulation task data.
+                Synchronized left/right grayscale and IMU stream added to provide stronger
+                stereo cues, sensor comparison, and calibration cross-checks.
               </p>
               <dl>
                 <dt>Signals</dt><dd>Left/right grayscale images, IMU, image timestamps, and optional RGB, depth, or VIO records.</dd>
@@ -281,8 +281,8 @@
             </article>
             <article class="snapshot-card">
               <span>2</span>
-              <strong>sensors</strong>
-              <p>Insta360 X5 and Insight9.</p>
+              <strong>sensor design</strong>
+              <p>Insta360 X5 covers wide-view VIO; Insight9 adds stereo depth cues.</p>
             </article>
             <article class="snapshot-card">
               <span>88</span>

@@ -1017,3 +1017,79 @@ Safety boundary:
 - Website static text/metadata update only.
 - Did not run Docker replay, robot control, collection, rosbag conversion, or
   UMID data/pipeline writes.
+
+## 14. Refine sensor-rationale copy
+
+Timestamp: 2026-07-13T18:21:10+08:00
+
+Reason: user clarified that the public sensor wording should explain why the
+benchmark uses both Insta360 X5 and Insight9: Insta360 X5 provides wide-view
+UMI-style visual-inertial motion, while its limited fisheye overlap constrains
+stereo depth, so Insight9 is included as a synchronized stereo companion. The
+user also asked to reduce repetitive sensor wording in the sensor section and
+the collected-scenario summary.
+
+Edits:
+
+- `index.html`
+  - Changed the sensor section heading to emphasize wide-view motion with
+    stereo-depth support.
+  - Rewrote the Insta360 X5 card around broad manipulation-view coverage and
+    the limited fisheye-overlap motivation.
+  - Rewrote the Insight9 card around synchronized stereo cues, sensor
+    comparison, and calibration cross-checks.
+  - Changed the collected summary card from generic `2 sensors` wording to a
+    concise `sensor design` explanation.
+
+Commands and checks:
+
+```bash
+rg -n "Sensor suite|Insta360 X5|Insight9|2</span>|sensors|Collected scenarios" index.html static/js/site.js static/css/site.css README.md COMMAND_LOG_website_update_20260712.md
+sed -n '130,220p' index.html
+sed -n '250,305p' index.html
+test -f .openai/hosting.json && sed -n '1,120p' .openai/hosting.json || true
+node --check static/js/site.js
+python3 - <<'PY'
+import re
+from pathlib import Path
+from urllib.parse import urlsplit
+root=Path('/media/zjj/Elements/CQU_ZJJ/MILD')
+files=[root/'index.html', root/'static/css/site.css']
+missing=[]
+for f in files:
+    text=f.read_text(encoding='utf-8')
+    for m in re.findall(r'(?:src|href|content)="(static/[^"]+\.(?:jpg|jpeg|png|webp|css|js)(?:\?[^"]*)?)"', text):
+        rel=urlsplit(m).path
+        if not (root/rel).exists():
+            missing.append((str(f.relative_to(root)), m))
+    for m in re.findall(r'url\("?\.\.\/images\/([^\)"\']+)"?\)', text):
+        rel=urlsplit(m).path
+        if not (root/'static/images'/rel).exists():
+            missing.append((str(f.relative_to(root)), 'static/images/'+m))
+print('missing_refs', len(missing))
+for item in missing:
+    print(item[0], item[1])
+PY
+rg -n "/home/zjj|/media/zjj|/mnt/|Elements|新加卷" index.html static/js/site.js static/css/site.css README.md || true
+rg -n "Wide-view|stereo depth|sensor design|Insight9 adds|Sensor Suite|Collected scenarios" index.html
+git diff --check
+git diff --stat
+git status --short
+```
+
+Validation results:
+
+- `node --check static/js/site.js`: success.
+- Static resource reference check: `missing_refs 0`.
+- Public files private absolute path scan: success, no output.
+- `git diff --check`: success.
+- Updated text is present in the intended sensor and collected-summary
+  locations.
+- Final changed files: `index.html` and
+  `COMMAND_LOG_website_update_20260712.md`.
+
+Safety boundary:
+
+- Website copy update only.
+- Did not run Docker replay, robot control, collection, rosbag conversion, or
+  UMID data/pipeline writes.
