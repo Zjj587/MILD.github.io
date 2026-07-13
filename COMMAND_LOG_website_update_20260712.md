@@ -2272,3 +2272,82 @@ Safety boundary:
 - Website HTML/CSS/JS display-only adjustment.
 - Did not run Docker replay, robot control, collection, rosbag conversion, or
   UMID data/pipeline writes.
+
+## 29. Remove inventory table and rebalance sensor photos
+
+Timestamp: 2026-07-14T01:18:08+08:00
+
+Purpose:
+
+- Remove the `Inventory / Collected task inventory` table from the public page.
+- Improve the sensor photo layout in `Wide-view motion with stereo depth
+  support.` so the landscape Insta360 X5 photo and portrait Insight9 photo are
+  shown fully and at smaller, more suitable sizes.
+
+Files changed:
+
+- `index.html`
+  - Removed the navigation link to `#collected`.
+  - Removed the `collected-section` inventory table block.
+  - Added `sensor-photo-wide` and `sensor-photo-portrait` classes.
+  - Reworded release-layout copy so it no longer references the removed
+    inventory table.
+  - Updated JS cache-bust query to `v=20260714-sensor-layout`.
+- `static/js/site.js`
+  - Removed `renderCollectedInventory()` and its call.
+- `static/css/site.css`
+  - Removed inventory table styles and the unused `sensor-chip-row` styles.
+  - Reworked `.sensor-grid` and `.sensor-photo*` so photos use
+    `object-fit: contain`, with landscape and portrait sizing handled
+    separately.
+
+Commands run:
+
+```bash
+cd /media/zjj/Elements/CQU_ZJJ/MILD
+/home/zjj/.cache/agibot/live_shared_memory/team_deep_preflight.sh nova
+rg -n "Inventory|Collected task inventory|Wide-view motion|sensor-photo|sensor-grid|sensor-card|inventory|Sensor suite|stereo depth" index.html static/css/site.css static/js/site.js
+nl -ba index.html | sed -n '136,184p;252,304p;478,492p;530,538p'
+nl -ba static/css/site.css | sed -n '300,392p;486,578p;1176,1188p;1236,1286p'
+nl -ba static/js/site.js | sed -n '515,580p'
+find static/images/pic/sensor -maxdepth 1 -type f -printf '%f\n' | sort
+file static/images/pic/sensor/instan360x5.jpg static/images/pic/sensor/insight9.jpg
+identify -format '%f %wx%h\n' static/images/pic/sensor/instan360x5.jpg static/images/pic/sensor/insight9.jpg 2>/dev/null || true
+node --check static/js/site.js && git diff --check
+rg -n "#collected|collected-section|Inventory|Collected task inventory|inventory-|collectedInventory|inventoryCount|renderCollectedInventory|sensor-chip-row|shown in the inventory|benchmark inventory" index.html static/css/site.css static/js/site.js || true
+python3 - <<'PY'
+from pathlib import Path
+from bs4 import BeautifulSoup
+soup=BeautifulSoup(Path('index.html').read_text(encoding='utf-8'), 'html.parser')
+print('nav_links', [a.get_text(strip=True) for a in soup.select('.site-nav a')])
+print('inventory_sections', len(soup.select('#collected, .collected-section, .inventory-panel, #collectedInventory')))
+print('sensor_imgs', [(img.get('src'), ' '.join(img.get('class', []))) for img in soup.select('.sensor-photo')])
+print('script_src', soup.select_one('script[src^="static/js/site.js"]')['src'])
+PY
+date -Iseconds && git diff --stat && git status --short
+google-chrome --headless=new --no-sandbox --disable-gpu --hide-scrollbars --window-size=1440,5200 --screenshot=/tmp/mild_sensor_layout_final.png file:///media/zjj/Elements/CQU_ZJJ/MILD/index.html
+```
+
+Validation results:
+
+- Sensor source dimensions:
+  - `instan360x5.jpg 1600x1200`
+  - `insight9.jpg 900x1200`
+- `node --check static/js/site.js`: success.
+- `git diff --check`: success.
+- Removed inventory residuals:
+  - `inventory_sections 0`
+  - navigation links are now `Overview`, `Benchmark`, `Sensors`, `Sequences`,
+    `Tasks`, `Release`, `Citation`.
+- Sensor image classes:
+  - `instan360x5.jpg`: `sensor-photo sensor-photo-wide`
+  - `insight9.jpg`: `sensor-photo sensor-photo-portrait`
+- Script cache-bust present: `static/js/site.js?v=20260714-sensor-layout`.
+- Chrome headless screenshot rendered successfully at
+  `/tmp/mild_sensor_layout_final.png`.
+
+Safety boundary:
+
+- Website HTML/CSS/JS display-only adjustment.
+- Did not run Docker replay, robot control, collection, rosbag conversion, or
+  UMID data/pipeline writes.

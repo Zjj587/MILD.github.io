@@ -34,7 +34,6 @@
         <a href="#benchmark">Benchmark</a>
         <a href="#sensors">Sensors</a>
         <a href="#sequences">Sequences</a>
-        <a href="#collected">Inventory</a>
         <a href="#tasks">Tasks</a>
         <a href="#release">Release</a>
         <a href="#citation">Citation</a>
@@ -146,7 +145,7 @@
           <div class="sensor-grid" aria-label="Included camera sensors">
             <article class="sensor-card">
               <div class="sensor-topline"><span>Insta360 X5</span><strong>Wide-view VIO stream</strong></div>
-              <img class="sensor-photo" src="static/images/pic/sensor/instan360x5.jpg" alt="Insta360 X5 mounted for MILD collection">
+              <img class="sensor-photo sensor-photo-wide" src="static/images/pic/sensor/instan360x5.jpg" alt="Insta360 X5 mounted for MILD collection">
               <h3>Broad manipulation view</h3>
               <p>
                 Primary wearable or handheld stream for fast UMI-style motion. Its fisheye
@@ -165,7 +164,7 @@
 
             <article class="sensor-card">
               <div class="sensor-topline"><span>Insight9</span><strong>Stereo companion stream</strong></div>
-              <img class="sensor-photo" src="static/images/pic/sensor/insight9.jpg" alt="Insight9 camera used in the MILD sensor suite">
+              <img class="sensor-photo sensor-photo-portrait" src="static/images/pic/sensor/insight9.jpg" alt="Insight9 camera used in the MILD sensor suite">
               <h3>Depth and geometry support</h3>
               <p>
                 Synchronized left/right grayscale and IMU stream added to provide stronger
@@ -257,42 +256,6 @@
       custom48h12/
         4/
     tablecloth/</code></pre>
-          </div>
-        </div>
-      </section>
-
-      <section class="section collected-section" id="collected">
-        <div class="section-inner">
-          <div class="section-heading">
-            <p class="section-kicker">Inventory</p>
-            <h2>Collected task inventory.</h2>
-          </div>
-
-          <div class="inventory-panel">
-            <div class="inventory-header">
-              <div>
-                <h3>Usable sequence table</h3>
-                <p>
-                  The summary numbers are shown once above; this table focuses on task-level
-                  variants, sensor availability, and the Insight9 sequences that pass the usable-data rule.
-                </p>
-              </div>
-              <span id="inventoryCount">15 tasks</span>
-            </div>
-            <div class="inventory-scroll">
-              <table class="inventory-table">
-                <thead>
-                  <tr>
-                    <th>Task</th>
-                    <th>Variants</th>
-                    <th>Insta360 X5 Usable</th>
-                    <th>Insight9 Usable</th>
-                    <th>Usable Insight9 Variants</th>
-                  </tr>
-                </thead>
-                <tbody id="collectedInventory"></tbody>
-              </table>
-            </div>
           </div>
         </div>
       </section>
@@ -482,9 +445,9 @@
             </div>
             <div class="release-content">
               <p>
-                The public release area is ready for stable dataset links. The benchmark inventory
-                is organized by task scenario, marker setup, material variant, and sensor stream, and
-                the task explorer uses the same 15 release-facing scenarios shown in the inventory.
+                The public release area is ready for stable dataset links. The release structure is
+                organized by task scenario, marker setup, material variant, and sensor stream, matching
+                the 15 release-facing scenarios in the task explorer.
               </p>
               <pre><code>dataset/
   calibration/
@@ -532,6 +495,6 @@
       <a href="#top">Back to top</a>
     </footer>
 
-    <script src="static/js/site.js?v=20260714-empty-state"></script>
+    <script src="static/js/site.js?v=20260714-sensor-layout"></script>
   </body>
 </html>

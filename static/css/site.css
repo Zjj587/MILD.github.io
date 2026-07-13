@@ -311,8 +311,9 @@ h2 {
 
 .sensor-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
+  grid-template-columns: minmax(0, 1.06fr) minmax(280px, 0.94fr);
+  align-items: start;
+  gap: 20px;
 }
 
 .sensor-card {
@@ -360,12 +361,24 @@ h2 {
 }
 
 .sensor-photo {
+  display: block;
+  justify-self: center;
   width: 100%;
-  aspect-ratio: 16 / 9;
-  object-fit: cover;
+  object-fit: contain;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: var(--soft);
+  background: #f2f5f1;
+}
+
+.sensor-photo-wide {
+  aspect-ratio: 4 / 3;
+  max-height: 240px;
+}
+
+.sensor-photo-portrait {
+  width: min(100%, 280px);
+  aspect-ratio: 3 / 4;
+  max-height: 320px;
 }
 
 .sensor-card p {
@@ -487,101 +500,6 @@ h2 {
   margin: 0;
 }
 
-.collected-section {
-  background: #f7f0e6;
-}
-
-.inventory-panel {
-  overflow: hidden;
-  border: 1px solid #e2d5c1;
-  border-radius: 8px;
-  background: var(--white);
-}
-
-.inventory-header {
-  display: flex;
-  align-items: start;
-  justify-content: space-between;
-  gap: 20px;
-  padding: 20px;
-  border-bottom: 1px solid var(--line);
-}
-
-.inventory-header h3 {
-  margin: 0 0 8px;
-  font-size: 1.28rem;
-}
-
-.inventory-header p {
-  max-width: 780px;
-  margin: 0;
-  color: var(--muted);
-}
-
-.inventory-header span {
-  flex: 0 0 auto;
-  padding: 7px 10px;
-  color: var(--teal-dark);
-  border: 1px solid #9dcac1;
-  border-radius: 8px;
-  background: #e3f3ef;
-  font-size: 0.86rem;
-  font-weight: 840;
-}
-
-.inventory-scroll {
-  overflow-x: auto;
-}
-
-.inventory-table {
-  width: 100%;
-  min-width: 880px;
-  border-collapse: collapse;
-}
-
-.inventory-table th,
-.inventory-table td {
-  padding: 13px 16px;
-  border-bottom: 1px solid var(--line);
-  text-align: left;
-  vertical-align: top;
-}
-
-.inventory-table thead th {
-  color: var(--muted);
-  background: #fbfaf6;
-  font-size: 0.78rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.inventory-table tbody th {
-  width: 180px;
-  font-weight: 850;
-}
-
-.inventory-table tbody th small,
-.inventory-table td small {
-  display: block;
-  margin-top: 6px;
-  color: var(--muted);
-  font-size: 0.78rem;
-  font-weight: 690;
-  line-height: 1.35;
-}
-
-.inventory-table tbody tr:last-child th,
-.inventory-table tbody tr:last-child td {
-  border-bottom: 0;
-}
-
-.sensor-chip-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.sensor-chip-row span,
 .status-badge {
   display: inline-flex;
   align-items: center;
@@ -591,12 +509,6 @@ h2 {
   font-size: 0.78rem;
   font-weight: 790;
   white-space: nowrap;
-}
-
-.sensor-chip-row span {
-  color: #2d4c64;
-  border: 1px solid #c7d9e7;
-  background: #e9f2f8;
 }
 
 .status-badge {
@@ -1241,10 +1153,6 @@ code {
   .variant-grid,
   .task-grid {
     grid-template-columns: 1fr;
-  }
-
-  .inventory-header {
-    flex-direction: column;
   }
 
   .task-card {
