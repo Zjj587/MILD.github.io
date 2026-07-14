@@ -3383,3 +3383,105 @@ Safety boundary:
 - No `git pull`, `git push`, `git reset`, `git fetch`, Docker replay, robot
   control, collection, rosbag conversion, UMID data writes, or pipeline edits
   were run.
+
+## 43. Further shrink Circular task preview to avoid side clipping
+
+Timestamp: 2026-07-14T19:01:35+08:00
+
+Purpose:
+
+- Respond to user feedback that the `Circular` task preview in `Benchmark task
+  scenarios` still appeared incomplete, with left/right clipping.
+- Use a more conservative display size and verify rendered trajectory margins
+  with low-payload pixel statistics instead of `view_image`.
+
+Files changed:
+
+- `index.html`
+- `static/css/site.css`
+- `COMMAND_LOG_website_update_20260712.md`
+
+Commands run:
+
+```bash
+/home/zjj/.cache/agibot/live_shared_memory/team_deep_preflight.sh nova
+git status --short
+nl -ba static/css/site.css | sed -n '735,756p'
+python3 - <<'PY'
+# Inspect Circular_2_t_trajectory_shape.png dimensions and alpha/nonwhite bbox.
+PY
+```
+
+Edit operations:
+
+```text
+apply_patch:
+- static/css/site.css `.task-photo-f` background-size changed from `70% auto`
+  to `56% auto`.
+- index.html cache bust updated to `v=20260714-circular-safe`.
+```
+
+Validation commands:
+
+```bash
+node --check static/js/site.js
+python3 - <<'PY'
+# Static assertions for `background-size: 56% auto` and cache bust string.
+PY
+python3 - <<'PY'
+# Static asset reference check resolving HTML, CSS, and JS image references.
+PY
+rg -n "/home/zjj|/media/zjj|/mnt/|Elements|新加卷" index.html static/js/site.js static/css/site.css README.md || true
+git diff --check
+node <<'NODE'
+# Chrome CDP focused Circular screenshots and bbox validation:
+# /tmp/mild_circular_safe_desktop.png
+# /tmp/mild_circular_safe_mobile.png
+NODE
+python3 - <<'PY'
+# First rendered-pixel check. Failed because it counted the bottom-right
+# `View task` badge as non-background content.
+PY
+python3 - <<'PY'
+# Corrected rendered-pixel check: strict orange trajectory pixels, excluding
+# the badge area.
+PY
+date --iso-8601=seconds
+```
+
+Validation results:
+
+- Deep preflight completed; Rule 16 remains `NO_VIEW_IMAGE` recovery.
+- Source Circular PNG:
+  - size `1116x756`;
+  - alpha bbox `(210, 78, 906, 678)`;
+  - nonwhite alpha bbox `(210, 83, 906, 673)`;
+  - source margins `(210, 83, 210, 83)`.
+- `node --check static/js/site.js`: success.
+- Static assertions: success.
+- Static asset reference check: `checked_refs 27`, `missing_refs []`.
+- Public website file private-path scan: no matches.
+- `git diff --check`: success before command-log append.
+- Chrome CDP:
+  - Desktop screenshot `/tmp/mild_circular_safe_desktop.png`, `1440x900`,
+    `348193` bytes.
+  - Mobile screenshot `/tmp/mild_circular_safe_mobile.png`, `390x900`,
+    `96194` bytes.
+  - Desktop `.task-photo-f`: in viewport, within X bounds, computed
+    `background-size: 56%`, badge `"View task"`, no horizontal overflow.
+  - Mobile `.task-photo-f`: in viewport, within X bounds, computed
+    `background-size: 56%`, badge `"View task"`, no horizontal overflow.
+- Corrected rendered-pixel margin check:
+  - Desktop orange trajectory bbox `(123, 54, 255, 166)` inside card
+    `379x220`, margins `(123, 54, 124, 54)`.
+  - Mobile orange trajectory bbox `(114, 58, 237, 162)` inside card `352x220`,
+    margins `(114, 58, 115, 58)`.
+
+Safety boundary:
+
+- No `view_image` calls.
+- Screenshots were generated only as files under `/tmp`; they were not opened
+  or loaded into chat context.
+- No `git pull`, `git push`, `git reset`, `git fetch`, Docker replay, robot
+  control, collection, rosbag conversion, UMID data writes, or pipeline edits
+  were run.
