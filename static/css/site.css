@@ -901,12 +901,27 @@ h2 {
   width: min(1080px, calc(100vw - 32px));
   max-height: calc(100vh - 32px);
   padding: 0;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   color: var(--ink);
   border: 0;
   border-radius: 8px;
   background: var(--white);
   box-shadow: var(--shadow);
+}
+
+.task-detail-dialog::-webkit-scrollbar {
+  width: 9px;
+}
+
+.task-detail-dialog::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: #c8d7d2;
+}
+
+.task-detail-dialog::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .task-detail-dialog::backdrop {
@@ -940,7 +955,7 @@ h2 {
   gap: 18px;
   min-width: 0;
   padding: 24px;
-  overflow-y: auto;
+  overflow: visible;
 }
 
 .task-detail-header {
@@ -1006,23 +1021,6 @@ h2 {
 .scene-list {
   display: grid;
   gap: 8px;
-  max-height: min(420px, calc(100vh - 300px));
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  padding-right: 6px;
-}
-
-.scene-list::-webkit-scrollbar {
-  width: 8px;
-}
-
-.scene-list::-webkit-scrollbar-thumb {
-  border-radius: 999px;
-  background: #c8d7d2;
-}
-
-.scene-list::-webkit-scrollbar-track {
-  background: transparent;
 }
 
 .scene-option {
@@ -1270,10 +1268,6 @@ code {
 
   .task-detail-photo {
     min-height: 240px;
-  }
-
-  .scene-list {
-    max-height: 260px;
   }
 
   .sensor-card dl,

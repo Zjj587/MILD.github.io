@@ -2596,3 +2596,57 @@ Safety boundary:
 - Website HTML/CSS display-only adjustment.
 - Did not run Docker replay, robot control, collection, rosbag conversion, or
   UMID data/pipeline writes.
+
+## 33. Move task-detail scrolling from Scenes to the whole dialog
+
+Timestamp: 2026-07-14T12:11:48+08:00
+
+Purpose:
+
+- Correct the previous interaction direction: the scrollbar should belong to
+  the whole task-detail subinterface, not only the `Scenes` list.
+- Remove nested scrolling from `.scene-list` and `.task-detail-content`.
+- Make `.task-detail-dialog` the only scrolling container when dialog content
+  exceeds the viewport.
+
+Files changed:
+
+- `index.html`
+- `static/css/site.css`
+
+Commands run:
+
+```bash
+/home/zjj/.cache/agibot/live_shared_memory/team_deep_preflight.sh nova
+node --check static/js/site.js
+python3 - <<'PY'
+# DOM/CSS check: cache-bust strings, dialog scrolling, scene-list no-scroll.
+PY
+rg -n "dialog-page-scroll|task-detail-dialog|task-detail-content|scene-list|overflow-y: auto|overflow: visible|scene-list::-webkit" index.html static/css/site.css static/js/site.js
+python3 - <<'PY'
+# Static asset reference check resolving HTML, CSS, and JS image references.
+PY
+rg -n "/home/zjj|/media/zjj|/mnt/|Elements|新加卷" index.html static/js/site.js static/css/site.css README.md || true
+git diff --check
+google-chrome --headless=new --no-sandbox --disable-gpu --window-size=1440,7600 --screenshot=/tmp/mild_dialog_page_scroll.png file:///media/zjj/Elements/CQU_ZJJ/MILD/index.html
+```
+
+Validation results:
+
+- `node --check static/js/site.js`: success.
+- DOM/CSS check:
+  - CSS and JS cache query strings are `v=20260714-dialog-page-scroll`.
+  - `.task-detail-dialog` has `overflow-y: auto`.
+  - `.task-detail-content` has `overflow: visible`.
+  - `.scene-list` has no `overflow` and no `max-height` in its rule block.
+- Static asset reference check: `missing_refs 0`.
+- Public files private absolute path scan: success, no output.
+- `git diff --check`: success.
+- Headless Chrome screenshot rendered successfully at
+  `/tmp/mild_dialog_page_scroll.png`.
+
+Safety boundary:
+
+- Website HTML/CSS display-only adjustment.
+- Did not run Docker replay, robot control, collection, rosbag conversion, or
+  UMID data/pipeline writes.
