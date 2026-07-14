@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360" role="img" aria-label="Circular trajectory preview">
+  <defs>
+    <marker id="arrowhead" markerWidth="18" markerHeight="18" refX="13" refY="9" orient="auto" markerUnits="userSpaceOnUse" viewBox="0 0 18 18">
+      <path d="M 0 0 L 18 9 L 0 18 z" fill="#ea580c"/>
+    </marker>
+  </defs>
+  <rect width="640" height="360" fill="none"/>
+  <circle cx="320" cy="180" r="118" fill="none" stroke="#fed7aa" stroke-width="28"/>
+  <path
+    d="M 320 62 C 385.2 62 438 114.8 438 180 C 438 245.2 385.2 298 320 298 C 254.8 298 202 245.2 202 180 C 202 135.4 226.8 95.8 264 75"
+    fill="none"
+    stroke="#ea580c"
+    stroke-width="18"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    marker-end="url(#arrowhead)"
+  />
+  <circle cx="320" cy="180" r="6" fill="#0f766e" opacity="0.72"/>
+</svg>

@@ -3485,3 +3485,107 @@ Safety boundary:
 - No `git pull`, `git push`, `git reset`, `git fetch`, Docker replay, robot
   control, collection, rosbag conversion, UMID data writes, or pipeline edits
   were run.
+
+## 44. Circular task-card preview SVG replacement after perceived clipping
+
+Date: 2026-07-14T19:16:33+08:00
+
+Operator/session:
+
+- Team member: `nova`
+- Rule 16 visual permission: `NO_VIEW_IMAGE`
+- Context: User reported that the Circular task-card image was smaller but the
+  circular trajectory still felt clipped. Low-payload pixel statistics showed
+  the earlier SVG arc/marker construction could place orange pixels too close
+  to the left edge even though the card container was not horizontally
+  overflowing.
+
+Scope:
+
+- `index.html`
+- `static/css/site.css`
+- `static/images/pic/trajectories/Circular_2_t_trajectory_preview.svg`
+- `COMMAND_LOG_website_update_20260712.md`
+
+Edits:
+
+- Added a web-only Circular preview SVG:
+  `static/images/pic/trajectories/Circular_2_t_trajectory_preview.svg`.
+- Updated `.task-photo-f` to use that SVG instead of the source PNG:
+  `../images/pic/trajectories/Circular_2_t_trajectory_preview.svg`.
+- Set `.task-photo-f` `background-size: 88% auto`.
+- Updated cache bust tokens in `index.html` to
+  `v=20260714-circular-svg`.
+- Preserved the source image
+  `static/images/pic/trajectories/Circular_2_t_trajectory_shape.png`
+  unchanged.
+- Reworked the SVG from an ambiguous arc command to an explicit cubic circular
+  path and changed the arrow marker from `markerUnits="strokeWidth"` to
+  `markerUnits="userSpaceOnUse"` so the marker cannot inflate into the card
+  edge.
+
+Commands run:
+
+```bash
+git status --short
+node --check static/js/site.js
+rg -n "Circular_2_t_trajectory_preview|20260714-circular-svg|task-photo-f|background-size: 88% auto|View task|View scenes" index.html static/css/site.css static/images/pic/trajectories/Circular_2_t_trajectory_preview.svg COMMAND_LOG_website_update_20260712.md
+git diff --check
+node - <<'NODE'
+# Static asset reference check for HTML/CSS/JS references, ignoring JS
+# template placeholders such as `${image}`.
+NODE
+node - <<'NODE'
+# Static assertions for cache bust, Circular SVG reference, View task badge,
+# and SVG cubic path / marker construction.
+NODE
+rg -n "/home/zjj|/media/zjj|Elements|CQU_ZJJ" index.html static/css/site.css static/js/site.js static/images/pic/trajectories/Circular_2_t_trajectory_preview.svg || true
+node - <<'NODE'
+# Chrome CDP focused Circular screenshots and DOM/CSS/bbox validation:
+# /tmp/mild_circular_svg_desktop.png
+# /tmp/mild_circular_svg_mobile.png
+NODE
+python3 - <<'PY'
+# PIL pixel statistics on the Circular task-photo crop; no image display.
+PY
+date --iso-8601=seconds
+```
+
+Validation results:
+
+- `node --check static/js/site.js`: success.
+- Static assertions: success.
+- Static asset reference check: `checkedRefs: 27`, `missing: []`.
+- Public website private-path scan: no matches.
+- `git diff --check`: success before command-log append.
+- Chrome CDP screenshot files:
+  - Desktop: `/tmp/mild_circular_svg_desktop.png`, `1440x900`,
+    `355953` bytes.
+  - Mobile: `/tmp/mild_circular_svg_mobile.png`, `390x900`,
+    `96715` bytes.
+- Chrome CDP DOM/CSS:
+  - Desktop `.task-photo-f`: bbox `379.34375x220`, within viewport X/Y,
+    computed `background-image` points to
+    `Circular_2_t_trajectory_preview.svg`, `background-size: 88%`, badge
+    `"View task"`, no horizontal overflow.
+  - Mobile `.task-photo-f`: bbox `352x220`, within viewport X/Y, computed
+    `background-image` points to `Circular_2_t_trajectory_preview.svg`,
+    `background-size: 88%`, badge `"View task"`, no horizontal overflow.
+- Final rendered-pixel margin check on the task-photo crop:
+  - Desktop orange trajectory bbox `[123, 44, 255, 176]` inside `379x220`,
+    margins `[123, 44, 124, 44]`.
+  - Desktop peach guide bbox `[120, 41, 258, 179]` inside `379x220`,
+    margins `[120, 41, 121, 41]`.
+  - Mobile orange trajectory bbox `[115, 49, 237, 171]` inside `352x220`,
+    margins `[115, 49, 115, 49]`.
+  - Mobile peach guide bbox `[112, 46, 240, 174]` inside `352x220`,
+    margins `[112, 46, 112, 46]`.
+
+Safety boundary:
+
+- No `view_image` calls.
+- Screenshots were generated only as files under `/tmp`; they were not opened
+  or loaded into chat context.
+- No `git pull`, `git push`, `git reset`, `git fetch`, Docker replay, robot
+  control, collection, rosbag conversion, UMID data writes, or pipeline edits
+  were run.
