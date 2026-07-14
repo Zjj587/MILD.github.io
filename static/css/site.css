@@ -677,7 +677,7 @@ h2 {
 }
 
 .task-photo::before {
-  content: "View scenes";
+  content: "View task";
   position: absolute;
   right: 12px;
   bottom: 12px;
@@ -775,8 +775,8 @@ h2 {
 
 .task-photo-k {
   background-color: #6b5748;
-  background-image: url("../images/pic/task/Grab_Place05.jpg");
-  transform: rotate(180deg);
+  overflow: hidden;
+  background-image: none;
 }
 
 .task-photo-l {
@@ -787,7 +787,9 @@ h2 {
 
 .task-photo-e::after,
 .task-photo-h::after,
-.task-photo-l::after {
+.task-photo-l::after,
+.task-photo-k::after,
+.task-photo-m::after {
   content: "";
   position: absolute;
   inset: -28% 0;
@@ -804,7 +806,9 @@ h2 {
 }
 
 .task-photo-e::after,
-.task-photo-l::after {
+.task-photo-l::after,
+.task-photo-k::after,
+.task-photo-m::after {
   transform: rotate(180deg) scale(1.1);
 }
 
@@ -820,10 +824,18 @@ h2 {
   background-image: url("../images/pic/task/Grab_Place06.jpg");
 }
 
+.task-photo-k::after {
+  background-image: url("../images/pic/task/Grab_Place05.jpg");
+}
+
 .task-photo-m {
   background-color: #586155;
+  overflow: hidden;
+  background-image: none;
+}
+
+.task-photo-m::after {
   background-image: url("../images/pic/task/Wiping01.jpg");
-  transform: rotate(180deg);
 }
 
 .task-photo-n {

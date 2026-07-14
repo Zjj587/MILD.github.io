@@ -3282,3 +3282,104 @@ Safety boundary:
 - No `git pull`, `git push`, `git reset`, `git fetch`, Docker replay, robot
   control, collection, rosbag conversion, UMID data writes, or pipeline edits
   were run.
+
+## 42. Rename task badge and keep rotated-task badges bottom-right
+
+Timestamp: 2026-07-14T18:42:59+08:00
+
+Purpose:
+
+- Rename the task image badge from `View scenes` to `View task`.
+- Fix `Grab Place 05` and `Wiping 01`, where the badge appeared at the top-left
+  because the entire button was rotated by `transform: rotate(180deg)`.
+- Keep the visual rotation for those two task photos by moving rotation to the
+  image-only `::after` layer so the button-level `::before` badge remains
+  bottom-right.
+
+Files changed:
+
+- `index.html`
+- `static/css/site.css`
+- `COMMAND_LOG_website_update_20260712.md`
+
+Commands run:
+
+```bash
+/home/zjj/.cache/agibot/live_shared_memory/team_deep_preflight.sh nova
+git status --short
+nl -ba static/css/site.css | sed -n '658,820p' && rg -n "View scenes|task-photo-k|task-photo-m|Wiping 01|Grab Place 05|task-photo::before" index.html static/css/site.css
+nl -ba static/css/site.css | sed -n '820,835p'
+```
+
+Edit operations:
+
+```text
+apply_patch:
+- static/css/site.css `.task-photo::before` content changed from `View scenes`
+  to `View task`.
+- static/css/site.css `.task-photo-k` and `.task-photo-m` now set
+  `overflow: hidden` and `background-image: none`, with no button-level
+  `transform`.
+- static/css/site.css `.task-photo-k::after` and `.task-photo-m::after` now
+  carry the rotated image layer.
+- index.html cache bust updated to `v=20260714-task-labels`.
+```
+
+Validation commands:
+
+```bash
+node --check static/js/site.js
+python3 - <<'PY'
+# CSS assertions: View task text, no View scenes, cache bust string,
+# no button-level transform in .task-photo-k/.task-photo-m, and image-only
+# ::after layers for Grab_Place05 and Wiping01.
+PY
+python3 - <<'PY'
+# Static asset reference check resolving HTML, CSS, and JS image references.
+PY
+rg -n "/home/zjj|/media/zjj|/mnt/|Elements|新加卷" index.html static/js/site.js static/css/site.css README.md || true
+git diff --check
+node <<'NODE'
+# Chrome CDP low-payload runtime validation for .task-photo-k and
+# .task-photo-m on desktop and 390px mobile. Screenshots written to:
+# /tmp/mild_task_labels_desktop_km.png
+# /tmp/mild_task_labels_mobile_km.png
+NODE
+date --iso-8601=seconds
+```
+
+Validation results:
+
+- `node --check static/js/site.js`: success.
+- CSS assertions: success.
+- Static asset reference check: `checked_refs 27`, `missing_refs []`.
+- Public website file private-path scan: no matches.
+- `git diff --check`: success before this command-log append.
+- Chrome CDP validation:
+  - Desktop screenshot:
+    `/tmp/mild_task_labels_desktop_km.png`, `1440x1100`, `436817` bytes.
+  - Mobile screenshot:
+    `/tmp/mild_task_labels_mobile_km.png`, `390x1100`, `186328` bytes.
+  - `.task-photo-k` / Grab Place 05:
+    - button transform: `none`;
+    - badge content: `"View task"`;
+    - badge position: `right: 12px`, `bottom: 12px`;
+    - image layer transform: `matrix(-1.1, 0, 0, -1.1, 0, 0)`;
+    - image source detected as `Grab_Place05`;
+    - bbox within X bounds on desktop and mobile.
+  - `.task-photo-m` / Wiping 01:
+    - button transform: `none`;
+    - badge content: `"View task"`;
+    - badge position: `right: 12px`, `bottom: 12px`;
+    - image layer transform: `matrix(-1.1, 0, 0, -1.1, 0, 0)`;
+    - image source detected as `Wiping01`;
+    - bbox within X bounds on desktop and mobile.
+
+Safety boundary:
+
+- No `view_image` calls.
+- Screenshots were generated only as files under `/tmp`; they were not opened
+  or loaded into chat context.
+- No `git pull`, `git push`, `git reset`, `git fetch`, Docker replay, robot
+  control, collection, rosbag conversion, UMID data writes, or pipeline edits
+  were run.
