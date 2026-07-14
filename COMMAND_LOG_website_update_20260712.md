@@ -3871,3 +3871,93 @@ Safety boundary:
 - No `git pull`, `git push`, `git reset`, `git fetch`, Docker replay, robot
   control, collection, rosbag conversion, UMID data writes, or pipeline edits
   were run.
+
+## 48. Rotate Grab Place 06 task preview to -90 degrees
+
+Date: 2026-07-14T20:12:30+08:00
+
+Operator/session:
+
+- Team member: `nova`
+- Rule 16 visual permission: `NO_VIEW_IMAGE`
+- Context: User requested the `Benchmark task scenarios` `Grab Place 06`
+  preview image be rotated `-90deg`.
+
+Scope:
+
+- `index.html`
+- `static/css/site.css`
+- `COMMAND_LOG_website_update_20260712.md`
+
+Edits:
+
+- Added a `.task-photo-l::after` transform override:
+  `rotate(-90deg) scale(1.1)`.
+- Left the existing rotated-image pseudo-element structure in place so the
+  `View task` badge remains on the unrotated button layer.
+- Updated cache-bust tokens in `index.html` to `v=20260714-grab06-neg90`.
+- Left other task transforms unchanged:
+  - `Box 02`: `rotate(-90deg) scale(1.1)`;
+  - `Grab Place 02`: `rotate(90deg) scale(1.1)`;
+  - `Grab Place 05` and `Wiping 01`: `rotate(180deg) scale(1.1)`.
+
+Commands run:
+
+```bash
+git status --short
+nl -ba index.html | sed -n '386,410p'
+nl -ba static/css/site.css | sed -n '790,840p'
+rg -n "Grab Place 06|task-photo-l|Grab_Place06|rotate\\(-90deg\\)|rotate\\(180deg\\)|20260714-box02-neg90" index.html static/css/site.css COMMAND_LOG_website_update_20260712.md | head -160
+node --check static/js/site.js
+git diff --check
+node - <<'NODE'
+# Static assertions for cache bust, Grab Place 06 image, Grab Place 06
+# -90deg transform, and unchanged neighboring transforms.
+NODE
+node - <<'NODE'
+# Static asset reference check.
+NODE
+node - <<'NODE'
+# Chrome CDP Grab Place 06 focused DOM/CSS/bbox validation:
+# /tmp/mild_grab06_neg90_desktop.png
+# /tmp/mild_grab06_neg90_mobile.png
+NODE
+date --iso-8601=seconds
+```
+
+Validation results:
+
+- `node --check static/js/site.js`: success.
+- Static assertions: success.
+- Static asset reference check: `checkedRefs: 27`, `missing: []`.
+- `git diff --check`: success before command-log append.
+- Chrome CDP screenshot files:
+  - Desktop: `/tmp/mild_grab06_neg90_desktop.png`, `1440x900`,
+    `486150` bytes.
+  - Mobile: `/tmp/mild_grab06_neg90_mobile.png`, `390x900`, `166775` bytes.
+- Desktop CDP:
+  - no horizontal overflow: `true`;
+  - Grab Place 06 `.task-photo-l` bbox `379.34375x220`, within viewport X/Y;
+  - `::after` transform `matrix(0, -1.1, 1.1, 0, 0, 0)`;
+  - `::after` background points to `Grab_Place06.jpg`;
+  - badge content remains `"View task"`;
+  - `Box 02` transform remains `matrix(0, -1.1, 1.1, 0, 0, 0)`;
+  - `Grab Place 02` transform remains `matrix(0, 1.1, -1.1, 0, 0, 0)`;
+  - `Grab Place 05` and `Wiping 01` remain
+    `matrix(-1.1, 0, 0, -1.1, 0, 0)`.
+- Mobile CDP:
+  - no horizontal overflow: `true`;
+  - Grab Place 06 `.task-photo-l` bbox `352x220`, within viewport X/Y;
+  - `::after` transform `matrix(0, -1.1, 1.1, 0, 0, 0)`;
+  - `::after` background points to `Grab_Place06.jpg`;
+  - badge content remains `"View task"`.
+
+Safety boundary:
+
+- No `view_image` calls.
+- Screenshots were generated only as files under `/tmp`; they were not opened
+  or loaded into chat context.
+- No files were deleted.
+- No `git pull`, `git push`, `git reset`, `git fetch`, Docker replay, robot
+  control, collection, rosbag conversion, UMID data writes, or pipeline edits
+  were run.
