@@ -2453,3 +2453,90 @@ Safety boundary:
 - Website HTML/CSS/JS display-only adjustment.
 - Did not run Docker replay, robot control, collection, rosbag conversion, or
   UMID data/pipeline writes.
+
+## 31. Trim release blocks and retune scene/task rotations
+
+Timestamp: 2026-07-14T02:10:41+08:00
+
+Purpose:
+
+- Rotate the `table` and `tablecloth` scene preview photos by 90 degrees.
+- Remove the `Release Unit` block from the sequences section.
+- Remove the `Designed for photo previews and per-scene downloads.` release
+  section for now.
+- Remove page links that pointed to the deleted release section.
+- Rotate `Box 02`, `Grab Place 02`, `Grab Place 05`, and `Grab Place 06` task
+  previews by 180 degrees.
+- Keep `Circular` using full-image `contain` display instead of an enlarged
+  cropped preview.
+
+Files changed:
+
+- `index.html`
+  - Removed `Release` from the top navigation.
+  - Removed the hero `Dataset Release` action link.
+  - Added `variant-photo-rotate` to `table` and `tablecloth` preview images.
+  - Removed the `Release Unit` structure block.
+  - Removed the whole `release-band` section.
+  - Updated CSS/JS cache-bust query to `v=20260714-release-trim`.
+- `static/css/site.css`
+  - Added `.variant-photo-rotate`.
+  - Removed unused `.structure-block`, `.release-band`, and `.release-content`
+    styling.
+  - Set `Box 02`, `Grab Place 02`, and `Grab Place 06` pseudo-image previews
+    to `rotate(180deg)`.
+  - Set `Grab Place 05` to `rotate(180deg)`.
+  - Kept `Circular` at `background-size: contain` after visual check showed
+    `auto` cropped the trajectory.
+
+Commands run:
+
+```bash
+cd /media/zjj/Elements/CQU_ZJJ/MILD
+/home/zjj/.cache/agibot/live_shared_memory/team_deep_preflight.sh nova
+rg -n "Release Unit|Designed for photo previews|release-band|Release Layout|task-photo-e|task-photo-f|task-photo-h|task-photo-k|task-photo-l|variant-photo|tablecloth|table.jpg|tablecloth.jpg|20260714-layout-scenes" index.html static/css/site.css static/js/site.js
+rg -n "#release|Release</a>|Dataset Release|Release Unit|Designed for photo previews|release-band|release-content|structure-block|variant-photo-rotate|task-photo-f|task-photo-k|rotate\\(180deg\\)|rotate\\(90deg\\)" index.html static/css/site.css
+node --check static/js/site.js
+python3 - <<'PY'
+from pathlib import Path
+from bs4 import BeautifulSoup
+soup=BeautifulSoup(Path('index.html').read_text(encoding='utf-8'), 'html.parser')
+print('release_sections', len(soup.select('#release, .release-band')))
+print('release_links', [a.get('href') for a in soup.select('a') if a.get('href') == '#release'])
+print('structure_blocks', len(soup.select('.structure-block')))
+print('nav_links', [a.get_text(strip=True) for a in soup.select('.site-nav a')])
+print('variant_rotate_imgs', [img.get('src') for img in soup.select('.variant-photo-rotate')])
+print('css_href', soup.select_one('link[rel="stylesheet"]')['href'])
+print('script_src', soup.select_one('script[src^="static/js/site.js"]')['src'])
+PY
+google-chrome --headless=new --no-sandbox --disable-gpu --hide-scrollbars --window-size=1440,7600 --screenshot=/tmp/mild_release_trim_final.png file:///media/zjj/Elements/CQU_ZJJ/MILD/index.html
+python3 - <<'PY'
+# Static asset reference check covering HTML, CSS, and JS image strings.
+PY
+rg -n "/home/zjj|/media/zjj|/mnt/|Elements|新加卷" index.html static/js/site.js static/css/site.css README.md || true
+git diff --check
+```
+
+Validation results:
+
+- `node --check static/js/site.js`: success.
+- `git diff --check`: success.
+- Static asset reference check: `missing_refs 0`.
+- Public files private absolute path scan: success, no output.
+- DOM checks:
+  - `release_sections 0`
+  - `release_links []`
+  - `structure_blocks 0`
+  - navigation links: `Overview`, `Benchmark`, `Sensors`, `Sequences`,
+    `Tasks`, `Citation`
+  - `variant_rotate_imgs` includes `table.jpg` and `tablecloth.jpg`
+  - `css_href static/css/site.css?v=20260714-release-trim`
+  - `script_src static/js/site.js?v=20260714-release-trim`
+- Headless Chrome screenshot rendered successfully at
+  `/tmp/mild_release_trim_final.png`.
+
+Safety boundary:
+
+- Website HTML/CSS display-only adjustment.
+- Did not run Docker replay, robot control, collection, rosbag conversion, or
+  UMID data/pipeline writes.

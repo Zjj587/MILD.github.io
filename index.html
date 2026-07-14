@@ -21,7 +21,7 @@
     >
     <meta property="og:image" content="static/images/pic/scenes/apriltag4.jpg">
     <link rel="preload" href="static/images/pic/scenes/apriltag4.jpg" as="image">
-    <link rel="stylesheet" href="static/css/site.css?v=20260714-media-cover">
+    <link rel="stylesheet" href="static/css/site.css?v=20260714-release-trim">
   </head>
   <body>
     <header class="site-header">
@@ -35,7 +35,6 @@
         <a href="#sensors">Sensors</a>
         <a href="#sequences">Sequences</a>
         <a href="#tasks">Tasks</a>
-        <a href="#release">Release</a>
         <a href="#citation">Citation</a>
       </nav>
     </header>
@@ -55,7 +54,6 @@
           </p>
           <div class="hero-actions" aria-label="Project links">
             <a class="action action-primary" href="#tasks">Explore Tasks</a>
-            <a class="action" href="#release">Dataset Release</a>
             <a class="action" href="#citation">Citation</a>
           </div>
         </div>
@@ -211,12 +209,12 @@
 
           <div class="variant-grid" aria-label="Scene setting previews">
             <article class="variant-panel">
-              <img class="variant-photo" src="static/images/pic/scenes/table.jpg" alt="Plain table scene setting">
+              <img class="variant-photo variant-photo-rotate" src="static/images/pic/scenes/table.jpg" alt="Plain table scene setting">
               <h3>table</h3>
               <p>Plain desktop surface.</p>
             </article>
             <article class="variant-panel">
-              <img class="variant-photo" src="static/images/pic/scenes/tablecloth.jpg" alt="Tablecloth scene setting">
+              <img class="variant-photo variant-photo-rotate" src="static/images/pic/scenes/tablecloth.jpg" alt="Tablecloth scene setting">
               <h3>tablecloth</h3>
               <p>Textured tablecloth appearance.</p>
             </article>
@@ -240,22 +238,6 @@
               <h3>apriltag4</h3>
               <p>Four AprilTag markers.</p>
             </article>
-          </div>
-
-          <div class="structure-block">
-            <div>
-              <h3>Release Unit</h3>
-              <p>Each downloadable task entry should expose the scene, sequence family, marker setup, and material variant.</p>
-            </div>
-            <pre><code>dataset/
-  desktop_pick_place/
-    table/
-    aruco/
-      4/
-    apriltag/
-      custom48h12/
-        4/
-    tablecloth/</code></pre>
           </div>
         </div>
       </section>
@@ -436,41 +418,6 @@
         </div>
       </section>
 
-      <section class="section release-band" id="release">
-        <div class="section-inner">
-          <div class="split">
-            <div>
-              <p class="section-kicker">Release Layout</p>
-              <h2>Designed for photo previews and per-scene downloads.</h2>
-            </div>
-            <div class="release-content">
-              <p>
-                The public release area is ready for stable dataset links. The release structure is
-                organized by task scenario, marker setup, material variant, and sensor stream, matching
-                the 15 release-facing scenarios in the task explorer.
-              </p>
-              <pre><code>dataset/
-  calibration/
-    calibration_insta360_x5_intrinsics.zip
-    calibration_insta360_x5_extrinsics.zip
-    calibration_insight9_intrinsics.zip
-    calibration_insight9_extrinsics.zip
-  scenarios/
-    desktop_pick_place/
-      metadata.json
-      table/
-      aruco/4/
-      apriltag/custom48h12/4/
-      tablecloth/
-    table_wiping/
-      preview.jpg
-      metadata.json
-      sequence_manifest.json</code></pre>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <section class="section" id="citation">
         <div class="section-inner citation-inner">
           <div>
@@ -495,6 +442,6 @@
       <a href="#top">Back to top</a>
     </footer>
 
-    <script src="static/js/site.js?v=20260714-layout-scenes"></script>
+    <script src="static/js/site.js?v=20260714-release-trim"></script>
   </body>
 </html>

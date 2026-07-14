@@ -485,32 +485,22 @@ h2 {
   background: var(--soft);
 }
 
+.variant-photo-rotate {
+  transform: rotate(90deg);
+  transform-origin: center;
+}
+
 .variant-panel h3,
-.structure-block h3 {
+.variant-panel p {
   margin: 0;
+}
+
+.variant-panel h3 {
   font-size: 1.18rem;
 }
 
-.variant-panel p,
-.structure-block p {
-  margin: 0;
+.variant-panel p {
   color: var(--muted);
-}
-
-.structure-block {
-  display: grid;
-  grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
-  gap: 24px;
-  align-items: start;
-  margin-top: 18px;
-  padding: 22px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--soft);
-}
-
-.structure-block pre {
-  margin: 0;
 }
 
 .status-badge {
@@ -759,6 +749,7 @@ h2 {
 .task-photo-k {
   background-color: #6b5748;
   background-image: url("../images/pic/task/Grab_Place05.jpg");
+  transform: rotate(180deg);
 }
 
 .task-photo-l {
@@ -776,7 +767,7 @@ h2 {
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
-  transform: rotate(90deg) scale(1.1);
+  transform: rotate(180deg) scale(1.1);
   transform-origin: center;
   pointer-events: none;
   z-index: 0;
@@ -1064,15 +1055,6 @@ h2 {
   font-size: 0.9rem;
 }
 
-.release-band {
-  background: var(--white);
-}
-
-.release-content p {
-  margin-top: 0;
-  color: var(--muted);
-}
-
 pre {
   overflow-x: auto;
   padding: 18px;
@@ -1138,8 +1120,7 @@ code {
   }
 
   .split,
-  .citation-inner,
-  .structure-block {
+  .citation-inner {
     grid-template-columns: 1fr;
   }
 
