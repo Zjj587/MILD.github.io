@@ -3784,3 +3784,90 @@ Safety boundary:
 - No `git pull`, `git push`, `git reset`, `git fetch`, Docker replay, robot
   control, collection, rosbag conversion, UMID data writes, or pipeline edits
   were run.
+
+## 47. Rotate Box 02 task preview to -90 degrees
+
+Date: 2026-07-14T20:04:00+08:00
+
+Operator/session:
+
+- Team member: `nova`
+- Rule 16 visual permission: `NO_VIEW_IMAGE`
+- Context: User requested the `Benchmark task scenarios` `Box 02` preview image
+  be rotated `-90deg`.
+
+Scope:
+
+- `index.html`
+- `static/css/site.css`
+- `COMMAND_LOG_website_update_20260712.md`
+
+Edits:
+
+- Added a `.task-photo-e::after` transform override:
+  `rotate(-90deg) scale(1.1)`.
+- Left the existing rotated-image pseudo-element structure in place so the
+  `View task` badge remains on the unrotated button layer.
+- Updated cache-bust tokens in `index.html` to `v=20260714-box02-neg90`.
+- Left other task transforms unchanged:
+  - `Grab Place 02`: `rotate(90deg) scale(1.1)`;
+  - `Grab Place 06`, `Grab Place 05`, and `Wiping 01` group:
+    `rotate(180deg) scale(1.1)`.
+
+Commands run:
+
+```bash
+git status --short
+nl -ba index.html | sed -n '320,340p'
+nl -ba static/css/site.css | sed -n '735,835p'
+rg -n "task-photo-e|Box 02|Box02|rotate\\(|task-photo::after|20260714" index.html static/css/site.css COMMAND_LOG_website_update_20260712.md | head -160
+node --check static/js/site.js
+git diff --check
+node - <<'NODE'
+# Static assertions for cache bust, Box02 image, Box02 -90deg transform,
+# and unchanged neighboring transforms.
+NODE
+node - <<'NODE'
+# Static asset reference check.
+NODE
+node - <<'NODE'
+# Chrome CDP Box 02 focused DOM/CSS/bbox validation:
+# /tmp/mild_box02_neg90_desktop.png
+# /tmp/mild_box02_neg90_mobile.png
+NODE
+date --iso-8601=seconds
+```
+
+Validation results:
+
+- `node --check static/js/site.js`: success.
+- Static assertions: success.
+- Static asset reference check: `checkedRefs: 27`, `missing: []`.
+- `git diff --check`: success before command-log append.
+- Chrome CDP screenshot files:
+  - Desktop: `/tmp/mild_box02_neg90_desktop.png`, `1440x900`, `378154` bytes.
+  - Mobile: `/tmp/mild_box02_neg90_mobile.png`, `390x900`, `132698` bytes.
+- Desktop CDP:
+  - no horizontal overflow: `true`;
+  - Box 02 `.task-photo-e` bbox `379.328125x220`, within viewport X/Y;
+  - `::after` transform `matrix(0, -1.1, 1.1, 0, 0, 0)`;
+  - `::after` background points to `Box02.jpg`;
+  - badge content remains `"View task"`;
+  - `Grab Place 02` transform remains `matrix(0, 1.1, -1.1, 0, 0, 0)`;
+  - `Grab Place 06` transform remains `matrix(-1.1, 0, 0, -1.1, 0, 0)`.
+- Mobile CDP:
+  - no horizontal overflow: `true`;
+  - Box 02 `.task-photo-e` bbox `352x220`, within viewport X/Y;
+  - `::after` transform `matrix(0, -1.1, 1.1, 0, 0, 0)`;
+  - `::after` background points to `Box02.jpg`;
+  - badge content remains `"View task"`.
+
+Safety boundary:
+
+- No `view_image` calls.
+- Screenshots were generated only as files under `/tmp`; they were not opened
+  or loaded into chat context.
+- No files were deleted.
+- No `git pull`, `git push`, `git reset`, `git fetch`, Docker replay, robot
+  control, collection, rosbag conversion, UMID data writes, or pipeline edits
+  were run.

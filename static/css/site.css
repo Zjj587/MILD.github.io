@@ -822,6 +822,7 @@ h2 {
 
 .task-photo-e::after {
   background-image: url("../images/pic/task/Box02.jpg");
+  transform: rotate(-90deg) scale(1.1);
 }
 
 .task-photo-h::after {
