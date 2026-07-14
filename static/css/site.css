@@ -486,27 +486,6 @@ h2 {
   background: var(--soft);
 }
 
-.variant-photo-frame {
-  display: grid;
-  place-items: center;
-  overflow: hidden;
-}
-
-.variant-photo-image {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.variant-photo-image-rotate {
-  width: auto;
-  max-width: none;
-  height: 100%;
-  transform: rotate(90deg);
-  transform-origin: center;
-}
-
 .variant-panel h3,
 .variant-panel p {
   margin: 0;

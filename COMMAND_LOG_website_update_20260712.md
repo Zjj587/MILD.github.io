@@ -2650,3 +2650,126 @@ Safety boundary:
 - Website HTML/CSS display-only adjustment.
 - Did not run Docker replay, robot control, collection, rosbag conversion, or
   UMID data/pipeline writes.
+
+## 34. Make table and tablecloth scene previews visible
+
+Timestamp: 2026-07-14T12:19:50+08:00
+
+Purpose:
+
+- Fix the `One task scene expands into many localization sequences` section
+  where `table` and `tablecloth` previews became nearly blank after the previous
+  rotated-contain treatment.
+- Keep the preview frame size unchanged while using image cover display for
+  the two portrait scene photos.
+
+Files changed:
+
+- `index.html`
+- `static/css/site.css`
+
+Commands run:
+
+```bash
+/home/zjj/.cache/agibot/live_shared_memory/team_deep_preflight.sh nova
+node --check static/js/site.js
+python3 - <<'PY'
+# DOM/CSS check: table/tablecloth preview classes and cache-bust query strings.
+PY
+rg -n "scene-preview-cover|variant-photo-image-cover|variant-photo-image-table|variant-photo-image-tablecloth|variant-photo-image-rotate|variant-photo-rotate" index.html static/css/site.css static/js/site.js
+python3 - <<'PY'
+# Static asset reference check resolving HTML, CSS, and JS image references.
+PY
+rg -n "/home/zjj|/media/zjj|/mnt/|Elements|新加卷" index.html static/js/site.js static/css/site.css README.md || true
+git diff --check
+google-chrome --headless=new --no-sandbox --disable-gpu --window-size=1440,7600 --screenshot=/tmp/mild_scene_preview_cover.png file:///media/zjj/Elements/CQU_ZJJ/MILD/index.html
+```
+
+Validation results:
+
+- `node --check static/js/site.js`: success.
+- DOM/CSS check:
+  - CSS and JS cache query strings are `v=20260714-scene-preview-cover`.
+  - `table.jpg` uses `.variant-photo-image-cover.variant-photo-image-table`.
+  - `tablecloth.jpg` uses
+    `.variant-photo-image-cover.variant-photo-image-tablecloth`.
+  - No `.variant-photo-image-rotate` or `.variant-photo-rotate` remains in the
+    preview markup/styles.
+- Static asset reference check: `missing_refs 0`.
+- Public files private absolute path scan: success, no output.
+- `git diff --check`: success.
+- Headless Chrome screenshot rendered successfully at
+  `/tmp/mild_scene_preview_cover.png`; visual check shows table scratches and
+  tablecloth grid are visible.
+
+Safety boundary:
+
+- Website HTML/CSS display-only adjustment.
+- Did not run Docker replay, robot control, collection, rosbag conversion, or
+  UMID data/pipeline writes.
+
+## 35. Replace table/tablecloth previews with landscape thumbnails
+
+Timestamp: 2026-07-14T14:19:58+08:00
+
+Purpose:
+
+- Fix the remaining visibility issue in `One task scene expands into many
+  localization sequences`: the original portrait scene photos still appeared
+  too blank or edge-cropped inside the landscape preview frame.
+- Keep source scene photos unchanged and add web-only landscape thumbnails for
+  the two preview cards.
+
+Files changed:
+
+- `index.html`
+- `static/css/site.css`
+- `static/images/pic/scenes/table_preview.jpg`
+- `static/images/pic/scenes/tablecloth_preview.jpg`
+
+Commands run:
+
+```bash
+/home/zjj/.cache/agibot/live_shared_memory/team_deep_preflight.sh nova
+convert static/images/pic/scenes/table.jpg -rotate 90 -resize 1200x787^ -gravity center -extent 1200x787 -brightness-contrast -12x58 -unsharp 0x1 -quality 92 static/images/pic/scenes/table_preview.jpg
+convert static/images/pic/scenes/tablecloth.jpg -rotate 90 -resize 1200x900^ -gravity center -extent 1200x900 -quality 92 static/images/pic/scenes/tablecloth_preview.jpg
+convert static/images/pic/scenes/table.jpg -crop 787x620+0+430 +repage -rotate 90 -resize 1200x787^ -gravity center -extent 1200x787 -brightness-contrast -8x34 -unsharp 0x1 -quality 92 static/images/pic/scenes/table_preview.jpg
+identify -format '%f %wx%h %[mean] %[standard-deviation]\n' static/images/pic/scenes/table_preview.jpg static/images/pic/scenes/tablecloth_preview.jpg
+node --check static/js/site.js
+python3 - <<'PY'
+# DOM check: first two scene preview cards use table_preview.jpg and
+# tablecloth_preview.jpg; no frame/rotate/cover helper classes remain.
+PY
+python3 - <<'PY'
+# Static asset reference check resolving HTML, CSS, and JS image references.
+PY
+rg -n "/home/zjj|/media/zjj|/mnt/|Elements|新加卷" index.html static/js/site.js static/css/site.css README.md || true
+git diff --check
+google-chrome --headless=new --no-sandbox --disable-gpu --window-size=1440,7600 --screenshot=/tmp/mild_scene_preview_landscape2.png file:///media/zjj/Elements/CQU_ZJJ/MILD/index.html
+```
+
+Validation results:
+
+- Generated preview dimensions:
+  - `table_preview.jpg 1200x787`
+  - `tablecloth_preview.jpg 1200x900`
+- `node --check static/js/site.js`: success.
+- DOM check:
+  - First preview image uses `static/images/pic/scenes/table_preview.jpg`.
+  - Second preview image uses
+    `static/images/pic/scenes/tablecloth_preview.jpg`.
+  - No `.variant-photo-frame`, `.variant-photo-image`,
+    `.variant-photo-image-cover`, `.variant-photo-image-rotate`, or
+    `.variant-photo-rotate` remains in the variant preview markup/styles.
+- Static asset reference check: `missing_refs 0`.
+- Public files private absolute path scan: success, no output.
+- `git diff --check`: success.
+- Headless Chrome screenshot rendered successfully at
+  `/tmp/mild_scene_preview_landscape2.png`; visual check shows visible table
+  surface marks and full tablecloth grid.
+
+Safety boundary:
+
+- Website image/HTML/CSS display-only adjustment.
+- Did not run Docker replay, robot control, collection, rosbag conversion, or
+  UMID data/pipeline writes.
