@@ -4071,3 +4071,94 @@ Safety boundary:
 - No `git pull`, `git push`, `git reset`, `git fetch`, Docker replay, robot
   control, collection, rosbag conversion, UMID data writes, or pipeline edits
   were run.
+
+## 49. Publish synchronized preview videos to GitHub release
+
+Date: 2026-07-16T10:57:39+08:00
+
+Operator/session:
+
+- Team member: `nova`
+- Rule 16 visual permission: `NO_VIEW_IMAGE`
+- Context: User authorized GitHub credentials for `zjj587` and requested that
+  all synchronized preview videos be connected to the website and pushed.
+
+Scope:
+
+- GitHub repository: `https://github.com/Zjj587/MILD`
+- GitHub release/tag: `v0.1`
+- Website code commit already pushed: `2695e14 Add synchronized video previews
+  to site`
+- Release video source root:
+  `/media/zjj/Elements/CQU_ZJJ/MILD_video_previews/v0_sync_combined`
+
+Actions:
+
+- Superseded the earlier credential-blocked status in section 46 after the user
+  supplied push/upload authorization.
+- Confirmed local `main` matched `origin/main` at `2695e14`.
+- Created GitHub release `v0.1` because no remote tags existed yet.
+- Uploaded all synchronized MP4 preview assets to the `v0.1` release using the
+  website naming convention:
+  `mild_v0_sync_<task_slug>__<scene_slug>__<sensor_slug>.mp4`.
+- Passed the GitHub token only through silent TTY input to the upload process;
+  the token was not written to command logs or repository files.
+
+Upload result:
+
+```text
+created_release tag=v0.1 id=354833125
+planned_assets=86 existing_assets=0
+uploaded=86 skipped=0 failed=0 final_matching=86/86
+```
+
+Independent release verification:
+
+```text
+release_id=354833125 tag=v0.1
+total_assets=86 matching_sync_videos=86
+```
+
+Sample URL verification:
+
+```text
+https://github.com/Zjj587/MILD/releases/download/v0.1/mild_v0_sync_analemma_2_t__table__insta360_x5.mp4
+  HTTP 302 -> HTTP 200, content-length=8497252
+
+https://github.com/Zjj587/MILD/releases/download/v0.1/mild_v0_sync_zigzag_2_t__apriltag_2__insight9.mp4
+  HTTP 302 -> HTTP 200, content-length=4010266
+```
+
+Commands run:
+
+```bash
+git status --short --branch
+git log -1 --oneline --decorate
+pgrep -af 'python3 -S|mild-sync-video-uploader|uploads.github.com|api.github.com'
+ps -o pid,ppid,stat,etime,cmd -p 7483
+ps -o pid,stat,wchan:30,etime,cmd -p 7483
+readlink /proc/7483/fd/0
+readlink /proc/7483/fd/1
+kill 7483
+git remote -v
+git ls-remote --tags origin
+git tag --list
+python3 -u -S - <<'PY'
+# Create release v0.1 when missing, upload 86 synchronized MP4 release assets,
+# skip existing assets if rerun, and verify final_matching.
+PY
+python3 -S - <<'PY'
+# Count v0.1 release assets via GitHub API.
+PY
+curl -I -L --max-time 60 https://github.com/Zjj587/MILD/releases/download/v0.1/mild_v0_sync_analemma_2_t__table__insta360_x5.mp4
+curl -I -L --max-time 60 https://github.com/Zjj587/MILD/releases/download/v0.1/mild_v0_sync_zigzag_2_t__apriltag_2__insight9.mp4
+```
+
+Safety boundary:
+
+- No `view_image` calls.
+- No screenshots, source images, video frames, or full visual payloads were
+  loaded into chat context.
+- No files were deleted.
+- No `git pull`, `git reset`, Docker replay, robot control, collection, rosbag
+  conversion, UMID data writes, or pipeline edits were run.
