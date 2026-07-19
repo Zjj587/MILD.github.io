@@ -186,6 +186,15 @@ const invalidDataSequences = new Set([
   "box02__aruco_4__insight9",
 ]);
 
+const rosbagDownloadLinks = {
+  circular_2_t__tablecloth__insight9: [
+    {
+      label: "Insight9 rosbag",
+      url: "https://1drv.ms/u/c/7625f90385490ff5/IQAmV_QL-rU1SqQzdBpodCS7AUDkH_74OnBbEEG8W8FUMv4",
+    },
+  ],
+};
+
 function normalize(value) {
   return value.trim().toLowerCase();
 }
@@ -255,7 +264,7 @@ if (searchInput) {
 function createDownloadPill(label, fileName) {
   const anchor = document.createElement("a");
   anchor.className = "download-pill";
-  anchor.href = `${releaseBaseUrl}${fileName}`;
+  anchor.href = /^https?:\/\//.test(fileName) ? fileName : `${releaseBaseUrl}${fileName}`;
   anchor.target = "_blank";
   anchor.rel = "noopener";
   anchor.textContent = label;
@@ -374,6 +383,13 @@ function getSyncVideo(taskSlug, sceneName, sensorName) {
     label: sensorVideoLabels[sensorName],
     spec: sensorVideoSpecs[sensorName],
   };
+}
+
+function getRosbagDownloadLinks(scene) {
+  return scene.sensors.flatMap((sensorName) => {
+    const key = syncVideoKey(scene.taskSlug, scene.name, sensorName);
+    return rosbagDownloadLinks[key] || [];
+  });
 }
 
 function buildSceneEntries(task) {
@@ -536,7 +552,8 @@ function renderSensorDetail(scene) {
     ? "This scene contains both the wide-view VIO stream and the stereo companion stream."
     : "Only the public usable Insta360 X5 stream is listed for this scene.";
 
-  if (scene.releaseSlug) {
+  const rosbagLinks = getRosbagDownloadLinks(scene);
+  if (scene.releaseSlug || rosbagLinks.length) {
     const heading = document.createElement("div");
     heading.className = "download-heading";
 
@@ -544,10 +561,13 @@ function renderSensorDetail(scene) {
     title.textContent = "Data links";
 
     const release = document.createElement("small");
-    release.textContent = "release plan";
+    release.textContent = rosbagLinks.length ? "OneDrive + release plan" : "release plan";
 
     heading.append(title, release);
     taskDetailRefs.sceneDownloads.appendChild(heading);
+    if (rosbagLinks.length) {
+      taskDetailRefs.sceneDownloads.appendChild(createDownloadRow("Rosbag", rosbagLinks.map((link) => createDownloadPill(link.label, link.url))));
+    }
     taskDetailRefs.sceneDownloads.appendChild(createDownloadRow("Scene", [
       createDownloadPill("bundle", `${scene.releaseSlug}_bundle.zip`),
     ]));
