@@ -1951,3 +1951,58 @@ git diff --check
 git diff -- index.html | sed -n '1,120p'
 date '+%Y-%m-%d %H:%M %Z'
 ```
+
+### Tool Operation 237
+
+- Timestamp: 2026-07-22 16:16 CST
+- Alias: nova
+- Tool: `apply_patch`
+- Reason: Remove the visible Insight9 `tf_static` download link from the
+  homepage calibration table because `calibration.yaml` already carries the
+  primary static extrinsics, while `tf_static_qos_services.yaml` is only ROS
+  frame-tree replay support.
+- Expected affected paths:
+  - `index.html`
+  - `COMMAND_LOG_mild_site.md`
+- Exit status: success.
+
+Evidence:
+
+```text
+Insight9 static transform files:
+  calibration.yaml: primary static extrinsics summary
+  tf_static_qos_services.yaml: ROS tf_static message/frame-tree export
+
+Website change:
+  Static transforms visible links before: calibration, tf_static
+  Static transforms visible links after: calibration
+```
+
+Validation:
+
+```text
+HTML parser/text check:
+  static_transform_links=[("calibration", "<calibration OneDrive URL>")]
+  tf_static_text_present=False
+  tf_static_url_present=False
+
+node --check static/js/site.js: pass
+git diff --check: pass
+```
+
+Commands run:
+
+```bash
+git status --short --branch
+nl -ba index.html | sed -n '232,240p'
+tail -n 90 COMMAND_LOG_mild_site.md
+rg -n "tf_static|Static transforms|calibration" index.html -S
+python3 - <<'PY'
+# Parse index.html and verify Static transforms exposes only calibration, while
+# the tf_static label and URL are absent.
+PY
+node --check static/js/site.js
+git diff --check
+git diff -- index.html | sed -n '1,100p'
+date '+%Y-%m-%d %H:%M %Z'
+```
