@@ -1824,6 +1824,97 @@ git status --short --branch
 date '+%Y-%m-%d %H:%M %Z'
 ```
 
+### Tool Operation 243 - Compact X5 calibration download layout
+
+- Timestamp: 2026-07-22 23:11 CST
+- Alias: nova
+- Tool: `apply_patch`, `node`, headless Chrome CDP DOM/layout checks
+- Reason: Make the "Broad manipulation view" calibration download area more
+  compact, especially reducing the empty space in the X5 `IMU parameters`
+  group.
+- Expected affected paths:
+  - `index.html`
+  - `static/css/site.css`
+  - `COMMAND_LOG_mild_site.md`
+- Safety notes:
+  - No `view_image` or screenshot/image inspection.
+  - The background OneDrive rosbag uploader service was not stopped, restarted,
+    or modified.
+  - OneDrive links and calibration data files were not changed.
+  - Unrelated dirty files were left untouched.
+- Exit status: success.
+
+Evidence:
+
+```text
+Website change:
+  Added `calibration-links-compact` to the X5 calibration downloads only.
+  Desktop compact layout:
+    left column: Intrinsics by model
+    right column: IMU parameters, then Extrinsics
+  Compact styling reduces:
+    group gap/padding
+    calibration row gap
+    model summary min-height
+    link min-height/padding
+
+Insight9:
+  Its calibration downloads do not receive `calibration-links-compact`.
+```
+
+Validation:
+
+```text
+Static checks:
+  x5_has_compact_class=True
+  insight9_not_compact=True
+  compact_two_column_css=True
+  compact_stacked_right_column_css=True
+  compact_mobile_reset_css=True
+  compact_link_height_css=True
+
+Headless Chrome CDP:
+  desktop width=1366, scrollWidth=1351, overflow=False
+  desktop groups:
+    Intrinsics by model: left=105, top=794, width=635, height=167
+    IMU parameters:      left=748, top=794, width=499, height=73
+    Extrinsics:          left=748, top=875, width=499, height=111
+  desktop linksFit=True
+  desktop computedColumns="635.031px 498.953px"
+  mobile width=390, scrollWidth=390, overflow=False
+  mobile groups:
+    Intrinsics by model: left=37, top=1212, width=316, height=167
+    IMU parameters:      left=37, top=1387, width=316, height=73
+    Extrinsics:          left=37, top=1468, width=316, height=111
+  mobile linksFit=True
+  mobile computedColumns="316px"
+
+node --check static/js/site.js: pass
+node --check visualizations/hand-eye/app.js: pass
+git diff --check: pass
+```
+
+Commands run:
+
+```bash
+/home/zjj/.cache/agibot/live_shared_memory/team_deep_preflight.sh nova >/tmp/nova_preflight_compact_calibration_links_20260722.log && tail -n 30 /tmp/nova_preflight_compact_calibration_links_20260722.log
+git status --short --branch
+nl -ba static/css/site.css | sed -n '470,590p'
+nl -ba index.html | sed -n '160,220p'
+node --check static/js/site.js
+node --check visualizations/hand-eye/app.js
+git diff --check
+node - <<'NODE'
+# Static assertion for X5 compact class, Insight9 unchanged, compact CSS, and
+# mobile grid reset.
+NODE
+node - <<'NODE'
+# Headless Chrome CDP assertions for desktop/mobile X5 compact group bboxes,
+# scrollWidth/clientWidth overflow, link fit, and right-column stacking.
+NODE
+date '+%Y-%m-%d %H:%M %Z'
+```
+
 ### Tool Operation 235
 
 - Timestamp: 2026-07-22 13:45 CST

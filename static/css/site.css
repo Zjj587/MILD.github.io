@@ -478,6 +478,31 @@ h2 {
   align-self: stretch;
 }
 
+.calibration-links-compact {
+  grid-template-columns: minmax(0, 1.12fr) minmax(220px, 0.88fr);
+  align-items: start;
+  gap: 8px;
+}
+
+.calibration-links-compact .calibration-group {
+  gap: 6px;
+  padding: 8px;
+  border-radius: 6px;
+}
+
+.calibration-links-compact .calibration-group:nth-child(1) {
+  grid-row: 1 / span 2;
+}
+
+.calibration-links-compact .calibration-group:nth-child(2),
+.calibration-links-compact .calibration-group:nth-child(3) {
+  grid-column: 2;
+}
+
+.calibration-links-compact .calibration-group > span {
+  font-size: 0.72rem;
+}
+
 .calibration-group {
   display: grid;
   gap: 8px;
@@ -502,6 +527,12 @@ h2 {
   align-items: start;
 }
 
+.calibration-links-compact .calibration-row {
+  grid-template-columns: minmax(74px, max-content) minmax(0, 1fr);
+  gap: 6px;
+  align-items: center;
+}
+
 .calibration-row strong {
   min-width: 0;
   color: var(--muted);
@@ -510,11 +541,19 @@ h2 {
   line-height: 1.2;
 }
 
+.calibration-links-compact .calibration-row strong {
+  font-size: 0.74rem;
+}
+
 .calibration-row div {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
   min-width: 0;
+}
+
+.calibration-links-compact .calibration-row div {
+  gap: 5px;
 }
 
 .calibration-model {
@@ -538,6 +577,11 @@ h2 {
   font-weight: 840;
   line-height: 1.2;
   list-style: none;
+}
+
+.calibration-links-compact .calibration-model summary {
+  min-height: 26px;
+  font-size: 0.75rem;
 }
 
 .calibration-model summary::-webkit-details-marker {
@@ -570,6 +614,11 @@ h2 {
   padding: 2px 0 4px;
 }
 
+.calibration-links-compact .calibration-model-links {
+  gap: 5px;
+  padding: 1px 0 3px;
+}
+
 .sensor-downloads a,
 .download-pill {
   display: inline-flex;
@@ -583,6 +632,13 @@ h2 {
   background: #e3f3ef;
   font-size: 0.84rem;
   font-weight: 820;
+}
+
+.calibration-links-compact a {
+  min-height: 28px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  font-size: 0.78rem;
 }
 
 .sensor-downloads a:hover,
@@ -1493,6 +1549,17 @@ code {
 
   .calibration-links {
     grid-template-columns: 1fr;
+  }
+
+  .calibration-links-compact {
+    grid-template-columns: 1fr;
+  }
+
+  .calibration-links-compact .calibration-group:nth-child(1),
+  .calibration-links-compact .calibration-group:nth-child(2),
+  .calibration-links-compact .calibration-group:nth-child(3) {
+    grid-column: auto;
+    grid-row: auto;
   }
 
   .calibration-row {
