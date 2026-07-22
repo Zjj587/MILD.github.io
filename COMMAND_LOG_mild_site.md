@@ -1818,3 +1818,63 @@ git diff -- static/js/site.js | sed -n '1,180p'
 git status --short --branch
 date '+%Y-%m-%d %H:%M %Z'
 ```
+
+### Tool Operation 235
+
+- Timestamp: 2026-07-22 13:45 CST
+- Alias: nova
+- Tool: `apply_patch`
+- Reason: Remove Insta360 X5 OCam audit/source rows from the visible homepage
+  calibration table so the intrinsics section emphasizes actually usable camera
+  models.
+- Expected affected paths:
+  - `index.html`
+  - `COMMAND_LOG_mild_site.md`
+- Exit status: success.
+
+Evidence:
+
+```text
+Removed from visible homepage config section:
+  OCam validation
+  py-OCam source
+
+Retained visible X5 intrinsics model rows:
+  POLYFISHEYE
+  CubemapSLAM / OCam
+  Omni + Radtan
+```
+
+Validation:
+
+```text
+rg "OCam validation|py-OCam source|CubemapSLAM / OCam|POLYFISHEYE|Omni \\+ Radtan" index.html:
+  OCam validation absent
+  py-OCam source absent
+  CubemapSLAM / OCam present
+
+HTML parser/text check:
+  has_cubemapslam_ocam=True
+  has_ocam_validation=False
+  has_py_ocam_source=False
+  oneDrive_links=25
+
+node --check static/js/site.js: pass
+git diff --check: pass
+```
+
+Commands run:
+
+```bash
+git status --short --branch
+nl -ba index.html | sed -n '153,190p'
+tail -n 90 COMMAND_LOG_mild_site.md
+rg -n "OCam validation|py-OCam source|CubemapSLAM / OCam|POLYFISHEYE|Omni \\+ Radtan|Pinhole \\+ Radtan" index.html -S
+python3 - <<'PY'
+# Parse index.html and assert the visible OCam audit/source labels are absent.
+PY
+node --check static/js/site.js
+git diff --check
+git diff -- index.html | sed -n '1,180p'
+date '+%Y-%m-%d %H:%M %Z'
+```
