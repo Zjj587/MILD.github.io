@@ -2171,3 +2171,86 @@ git add visualizations/hand-eye/vendor/three.core.js
 node --check static/js/site.js && node --check visualizations/hand-eye/app.js && git diff --cached --check && git diff --cached --name-only
 date '+%Y-%m-%d %H:%M %Z'
 ```
+
+### Tool Operation 239
+
+- Timestamp: 2026-07-22 18:13 CST
+- Alias: nova
+- Tool: `rclone`, `apply_patch`, HTML/static checks
+- Reason: Add the missing Insta360 X5 IMU intrinsic/noise parameter link under
+  the homepage "Broad manipulation view" calibration downloads.
+- Expected affected paths:
+  - `index.html`
+  - `COMMAND_LOG_mild_site.md`
+- Uploaded source:
+  - `/media/zjj/Elements/CQU_ZJJ/UMID/instan360_imu.yaml`
+- Uploaded remote:
+  - `onedrive:MILD/config/instan360x5/intrinsics/IMU/instan360_imu.yaml`
+- OneDrive link:
+  - `https://1drv.ms/u/c/7625f90385490ff5/IQCAe_hmI5y4QohVli5h4jP2AUjB2bYwQ2Pxvlqrs04XQ7Q`
+- Safety notes:
+  - No `view_image` or screenshot inspection.
+  - The background rosbag uploader service was not stopped, restarted, or
+    modified.
+- Exit status: success.
+
+Evidence:
+
+```text
+Source file:
+  sha256: 9f42d42eb9a937d9cd7c0cd212023c7ab58ddabe3581a610af14c7638469089a
+  size: 1015 bytes
+
+Source content scope:
+  - Kalibr/OpenVINS/iKalibr/ORB-SLAM3 continuous-time IMU density parameters.
+  - imu_utils parameters for VINS-Fisheye / VINS-Mono.
+  - X5 cam001/cam002 IMU transforms and camera-IMU timeshifts.
+
+Website change:
+  Added X5 calibration group:
+    IMU parameters
+      Noise models: Kalibr, imu_utils
+  Both links point to the uploaded aggregate `instan360_imu.yaml`.
+```
+
+Validation:
+
+```text
+HTML parser/text check:
+  imu_parameters_text=True
+  noise_models_text=True
+  uploaded URL count=2
+  Kalibr label=True
+  imu_utils label=True
+
+node --check static/js/site.js: pass
+git diff --check: pass
+```
+
+Commands run:
+
+```bash
+/home/zjj/.cache/agibot/live_shared_memory/team_deep_preflight.sh nova >/tmp/nova_preflight_x5_imu_links_20260722.log && tail -n 30 /tmp/nova_preflight_x5_imu_links_20260722.log
+nl -ba index.html | sed -n '140,215p'
+jq -r '.records[] | select((.sensor|test("X5|x5|Insta|insta";"i")) or (.label|test("imu|kalibr|unit";"i")) or (.kind|test("imu|kalibr|unit";"i")) or (.source|test("imu|kalibr|unit";"i"))) | [.sensor,.kind,.label,.source,.size,.url] | @tsv' /media/zjj/Elements/CQU_ZJJ/MILD_rosbags/onedrive_config_upload_links_20260719.json /media/zjj/Elements/CQU_ZJJ/MILD_rosbags/onedrive_config_upload_links_20260720_ocam_delta.json 2>/dev/null
+test -f /media/zjj/Elements/CQU_ZJJ/UMID/config/instan360_imu.yaml && echo FOUND && wc -c /media/zjj/Elements/CQU_ZJJ/UMID/config/instan360_imu.yaml && sed -n '1,160p' /media/zjj/Elements/CQU_ZJJ/UMID/config/instan360_imu.yaml || echo MISSING
+ls -lh /media/zjj/Elements/CQU_ZJJ/UMID/config | sed -n '1,160p'
+rg --files /media/zjj/Elements/CQU_ZJJ/UMID 2>/dev/null | rg '/insta?n360_imu\.ya?ml$|/instan360_imu\.yaml$|/insta360_imu\.yaml$' || true
+# The broad UMID file search was interrupted after direct path checks found the
+# intended file; no files were modified.
+for f in /media/zjj/Elements/CQU_ZJJ/UMID/instan360_imu.yaml /media/zjj/Elements/CQU_ZJJ/UMID/insta360_imu.yaml /media/zjj/新加卷/UMID/instan360_imu.yaml /media/zjj/新加卷/UMID/insta360_imu.yaml; do echo "== $f"; test -f "$f" && wc -c "$f" && sed -n '1,120p' "$f" || echo MISSING; done
+rclone lsf onedrive:MILD/config/instan360x5 --recursive 2>&1 | rg -i 'imu|allan|kalibr|unit' || true
+rclone mkdir onedrive:MILD/config/instan360x5/intrinsics/IMU
+rclone copyto /media/zjj/Elements/CQU_ZJJ/UMID/instan360_imu.yaml onedrive:MILD/config/instan360x5/intrinsics/IMU/instan360_imu.yaml --size-only --stats 30s --log-level INFO
+rclone lsjson onedrive:MILD/config/instan360x5/intrinsics/IMU/instan360_imu.yaml
+rclone link onedrive:MILD/config/instan360x5/intrinsics/IMU/instan360_imu.yaml
+sha256sum /media/zjj/Elements/CQU_ZJJ/UMID/instan360_imu.yaml
+wc -c /media/zjj/Elements/CQU_ZJJ/UMID/instan360_imu.yaml
+python3 - <<'PY'
+# Verify index.html contains IMU parameters / Noise models and two links to the
+# uploaded URL labelled Kalibr and imu_utils.
+PY
+node --check static/js/site.js && git diff --check
+git diff -- index.html | sed -n '1,120p'
+git status --short --branch
+```
