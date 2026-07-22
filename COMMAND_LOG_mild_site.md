@@ -1766,3 +1766,55 @@ node <<'NODE'
 // Rosbag and TUM rows for representative task/scene combinations.
 NODE
 ```
+
+### Tool Operation 234
+
+- Timestamp: 2026-07-22 12:51 CST
+- Alias: nova
+- Tool: `apply_patch`
+- Reason: Rename task-detail TUM download labels to `GT TUM` and expose the
+  robot end-effector ground-truth meaning via link title/aria-label.
+- Expected affected paths:
+  - `static/js/site.js`
+  - `COMMAND_LOG_mild_site.md`
+- Exit status: success.
+
+Evidence:
+
+```text
+Visible Data links row label:
+  TUM -> GT TUM
+
+Visible download pill labels:
+  Insight9 TUM -> Insight9 GT TUM
+  Insta360 X5 TUM -> Insta360 X5 GT TUM
+
+Accessible link title/aria-label:
+  <sensor> robot end-effector ground-truth TUM trajectory
+```
+
+Validation:
+
+```text
+node --check static/js/site.js: pass
+git diff --check: pass
+rg "GT TUM|sensorName\\} TUM|label: \\\"TUM\\\"|createDownloadPill" static/js/site.js:
+  GT TUM labels present
+  old visible `TUM` row label absent
+```
+
+Commands run:
+
+```bash
+git status --short --branch
+rg -n "\\bTUM\\b|tum|Data links|getDatasetDownloadRows|createDownloadPill" static/js/site.js static/css/site.css index.html -S
+tail -n 80 COMMAND_LOG_mild_site.md
+nl -ba static/js/site.js | sed -n '232,332p'
+nl -ba static/js/site.js | sed -n '438,466p'
+node --check static/js/site.js
+git diff --check
+rg -n "GT TUM|sensorName\\} TUM|label: \\\"TUM\\\"|createDownloadPill" static/js/site.js -S
+git diff -- static/js/site.js | sed -n '1,180p'
+git status --short --branch
+date '+%Y-%m-%d %H:%M %Z'
+```

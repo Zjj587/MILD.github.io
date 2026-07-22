@@ -248,7 +248,7 @@ const datasetDownloadLinks = Object.fromEntries(
     key,
     {
       rosbag: [{ label: `${sensorName} rosbag`, url: rosbagUrl }],
-      tum: [{ label: `${sensorName} TUM`, url: tumUrl }],
+      tum: [{ label: `${sensorName} GT TUM`, url: tumUrl, title: `${sensorName} robot end-effector ground-truth TUM trajectory` }],
     },
   ]),
 );
@@ -319,13 +319,15 @@ if (searchInput) {
   searchInput.addEventListener("input", updateTasks);
 }
 
-function createDownloadPill(label, fileName) {
+function createDownloadPill(label, fileName, title = label) {
   const anchor = document.createElement("a");
   anchor.className = "download-pill";
   anchor.href = /^https?:\/\//.test(fileName) ? fileName : `${releaseBaseUrl}${fileName}`;
   anchor.target = "_blank";
   anchor.rel = "noopener";
   anchor.textContent = label;
+  anchor.title = title;
+  anchor.setAttribute("aria-label", title);
   return anchor;
 }
 
@@ -457,7 +459,7 @@ function getDatasetDownloadRows(scene) {
 
   return [
     { label: "Rosbag", links: rows.rosbag },
-    { label: "TUM", links: rows.tum },
+    { label: "GT TUM", links: rows.tum },
   ].filter((row) => row.links.length);
 }
 
@@ -635,7 +637,7 @@ function renderSensorDetail(scene) {
     heading.append(title, release);
     taskDetailRefs.sceneDownloads.appendChild(heading);
     datasetDownloadRows.forEach((row) => {
-      taskDetailRefs.sceneDownloads.appendChild(createDownloadRow(row.label, row.links.map((link) => createDownloadPill(link.label, link.url))));
+      taskDetailRefs.sceneDownloads.appendChild(createDownloadRow(row.label, row.links.map((link) => createDownloadPill(link.label, link.url, link.title))));
     });
   }
 }
