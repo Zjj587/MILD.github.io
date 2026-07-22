@@ -1709,3 +1709,60 @@ git diff --check
 git diff -- index.html
 git status --short --branch
 ```
+
+### Tool Operation 233
+
+- Timestamp: 2026-07-22 10:46 CST
+- Alias: nova
+- Tool: `apply_patch`
+- Reason: Remove placeholder `Scene bundle` and `Metadata manifest` rows from
+  task detail Data links, leaving only validated OneDrive `Rosbag` and `TUM`
+  links.
+- Expected affected paths:
+  - `static/js/site.js`
+  - `COMMAND_LOG_mild_site.md`
+- Exit status: success.
+
+Evidence:
+
+```text
+Removed from Data links rendering:
+  release plan subtitle
+  Scene / bundle row
+  Metadata / manifest row
+
+Current Data links subtitle:
+  OneDrive
+
+Representative Chrome CDP DOM probe:
+  Circular / tablecloth labels: Rosbag, TUM
+  Zigzag / ArUco 2 labels: Rosbag, TUM
+  Bookshelf 01 / ArUco 2 labels: Rosbag, TUM
+  Placeholder rows/text in .scene-downloads: none
+```
+
+Validation:
+
+```text
+node --check static/js/site.js: pass
+git diff --check: pass
+rg placeholder Data links generators in static/js/site.js: no matches
+Chrome CDP DOM probe: ok=true
+```
+
+Commands run:
+
+```bash
+git status --short --branch
+nl -ba static/js/site.js | sed -n '624,646p'
+rg -n "release plan|Scene|Metadata|bundle|manifest" static/js/site.js index.html -S
+node --check static/js/site.js
+git diff --check
+rg -n "release plan|createDownloadRow\\(\"Scene\"|createDownloadRow\\(\"Metadata\"|_bundle\\.zip|_manifest\\.json" static/js/site.js -S || true
+python3 -m http.server 8765 --bind 127.0.0.1
+google-chrome --headless=new --no-sandbox --disable-gpu --remote-debugging-port=9222 --user-data-dir=/tmp/mild-chrome-cdp-profile.* http://127.0.0.1:8765/index.html
+node <<'NODE'
+// Use Chrome DevTools Protocol to verify task-detail Data links contain only
+// Rosbag and TUM rows for representative task/scene combinations.
+NODE
+```

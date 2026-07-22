@@ -622,7 +622,7 @@ function renderSensorDetail(scene) {
     : "Only the public usable Insta360 X5 stream is listed for this scene.";
 
   const datasetDownloadRows = getDatasetDownloadRows(scene);
-  if (scene.releaseSlug || datasetDownloadRows.length) {
+  if (datasetDownloadRows.length) {
     const heading = document.createElement("div");
     heading.className = "download-heading";
 
@@ -630,19 +630,13 @@ function renderSensorDetail(scene) {
     title.textContent = "Data links";
 
     const release = document.createElement("small");
-    release.textContent = datasetDownloadRows.length ? "OneDrive + release plan" : "release plan";
+    release.textContent = "OneDrive";
 
     heading.append(title, release);
     taskDetailRefs.sceneDownloads.appendChild(heading);
     datasetDownloadRows.forEach((row) => {
       taskDetailRefs.sceneDownloads.appendChild(createDownloadRow(row.label, row.links.map((link) => createDownloadPill(link.label, link.url))));
     });
-    taskDetailRefs.sceneDownloads.appendChild(createDownloadRow("Scene", [
-      createDownloadPill("bundle", `${scene.releaseSlug}_bundle.zip`),
-    ]));
-    taskDetailRefs.sceneDownloads.appendChild(createDownloadRow("Metadata", [
-      createDownloadPill("manifest", `${scene.releaseSlug}_manifest.json`),
-    ]));
   }
 }
 
