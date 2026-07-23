@@ -3280,3 +3280,63 @@ Validation:
   node --check visualizations/hand-eye/app.js: pass
   git diff --check: pass
 ```
+
+### Tool Operation 248 - Clarify sequence overview sensor abbreviations
+
+- Timestamp: 2026-07-23 14:42 CST
+- Alias: nova
+- Tool: `apply_patch`, `node`, static checks
+- Reason: Clarify the visible `X5` and `I9` abbreviations used in the new
+  sequence overview table so readers do not need to infer the sensor names
+  from table headers alone.
+- Expected affected paths:
+  - `index.html`
+  - `COMMAND_LOG_mild_site.md`
+- Safety notes:
+  - No `view_image` call and no screenshot/image inspection.
+  - No rosbag/video/TUM/config data or OneDrive links were modified.
+  - The OneDrive rosbag upload service was checked for active status only; it
+    was not stopped, restarted, or modified.
+  - Unrelated dirty files were left unstaged and untouched.
+  - A first log append matched an earlier validation block; it was corrected
+    and this operation record was moved to the end of the file.
+- Exit status: success.
+
+Commands run:
+
+```bash
+/home/zjj/.cache/agibot/live_shared_memory/team_deep_preflight.sh nova
+git status --short --branch
+systemctl --user is-active mild-onedrive-rosbag-upload-20260719.service
+date '+%Y-%m-%d %H:%M %Z'
+nl -ba index.html | sed -n '345,375p'
+rg -n "X5 and I9|sequenceOverviewSensors|abbr.title|sequence-overview-summary" index.html static/js/site.js static/css/site.css COMMAND_LOG_mild_site.md
+tail -n 80 COMMAND_LOG_mild_site.md
+node --check static/js/site.js
+node --check visualizations/hand-eye/app.js
+git diff --check
+node - <<'NODE'
+# Static assertion that the overview note contains:
+# `X5 = Insta360 X5; I9 = Insight9.`
+NODE
+nl -ba COMMAND_LOG_mild_site.md | sed -n '3020,3100p'
+nl -ba COMMAND_LOG_mild_site.md | tail -n 140
+```
+
+Evidence:
+
+```text
+Applied website diff:
+  index.html:
+    sequence overview summary:
+      "X5 and I9 columns separate sensor availability."
+      -> "X5 = Insta360 X5; I9 = Insight9."
+
+Static assertion:
+  sequence_abbreviation_note=true
+
+Validation:
+  node --check static/js/site.js: pass
+  node --check visualizations/hand-eye/app.js: pass
+  git diff --check: pass
+```
