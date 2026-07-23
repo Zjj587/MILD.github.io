@@ -61,22 +61,18 @@ canvas:focus-visible {
   position: relative;
 }
 
-body[data-embed="mild-x5"] .topbar,
-body[data-embed="mild-x5"] .title-block,
-body[data-embed="mild-x5"] .toolbar,
-body[data-embed="mild-x5"] .segmented,
-body[data-embed="mild-x5"] .view-buttons,
-body[data-embed="mild-x5"] .inspector,
-body[data-embed="mild-x5"] .coordinate-note,
-body[data-embed="mild-x5"] .tooltip {
+body[data-embed="mild-x5"] :is(.topbar, .title-block, .toolbar, .segmented, .view-buttons, .inspector, .coordinate-note, .tooltip),
+body[data-embed="mild-insight9"] :is(.topbar, .title-block, .toolbar, .segmented, .view-buttons, .inspector, .coordinate-note, .tooltip) {
   display: none;
 }
 
-body[data-embed="mild-x5"] #scene {
+body[data-embed="mild-x5"] #scene,
+body[data-embed="mild-insight9"] #scene {
   cursor: grab;
 }
 
-body[data-embed="mild-x5"] #scene:active {
+body[data-embed="mild-x5"] #scene:active,
+body[data-embed="mild-insight9"] #scene:active {
   cursor: grabbing;
 }
 

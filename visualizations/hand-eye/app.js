@@ -24,8 +24,9 @@ const LABEL_AXIS_DIRECTIONS = [
 ];
 const EMBED_FORCED_MODES = {
   "mild-x5": "x5-cam002-kalibr",
+  "mild-insight9": "insight9",
 };
-const MINIMAL_EMBEDS = new Set(["mild-x5"]);
+const MINIMAL_EMBEDS = new Set(["mild-x5", "mild-insight9"]);
 const params = new URLSearchParams(window.location.search);
 const embedMode = params.get("embed") || "full";
 const forcedEmbedMode = EMBED_FORCED_MODES[embedMode] || null;

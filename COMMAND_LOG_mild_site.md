@@ -1824,6 +1824,138 @@ git status --short --branch
 date '+%Y-%m-%d %H:%M %Z'
 ```
 
+### Tool Operation 244 - Compact Insight9 hand-eye embed
+
+- Timestamp: 2026-07-23 10:53 CST
+- Alias: nova
+- Tool: `apply_patch`, `node`, headless Chrome CDP DOM/layout checks
+- Reason: Make the "Depth and geometry support" hand-eye viewer match the
+  compact X5 homepage embed behavior while showing only the Insight9 hand-eye
+  pose-chain visualization.
+- Expected affected paths:
+  - `index.html`
+  - `visualizations/hand-eye/index.html`
+  - `visualizations/hand-eye/app.js`
+  - `visualizations/hand-eye/styles.css`
+  - `COMMAND_LOG_mild_site.md`
+- Safety notes:
+  - No `view_image` or screenshot/image inspection.
+  - The background OneDrive rosbag uploader service was not stopped, restarted,
+    or modified.
+  - Viewer data files and OneDrive links were not changed.
+  - Unrelated dirty files were left untouched.
+- Exit status: success.
+
+Evidence:
+
+```text
+Website change:
+  Insight9 iframe now uses:
+    class="handeye-viewer-frame handeye-viewer-frame-compact"
+    src="visualizations/hand-eye/?view=insight9&embed=mild-insight9"
+  Visible Insight9 caption:
+    T_EE_Sensor axes for the Insight9 left-gray pose chain.
+
+Embedded viewer behavior:
+  embed=mild-insight9 forces mode:
+    insight9
+  embed=mild-insight9 hides the same standalone viewer chrome as X5:
+    topbar
+    title-block
+    toolbar
+    segmented mode tabs
+    view buttons
+    inspector
+    coordinate note
+    tooltip
+
+Existing X5 compact embed remains:
+  embed=mild-x5 -> x5-cam002-kalibr
+```
+
+Validation:
+
+```text
+Static checks:
+  main_css_versioned=True
+  insight_iframe_compact=True
+  insight_src_embed=True
+  insight_caption_short=True
+  x5_still_present=True
+  viewer_assets_versioned=True
+  forced_x5=True
+  forced_insight9=True
+  minimal_has_both=True
+  hidden_chrome_for_both=True
+
+Headless Chrome CDP at 390px:
+  scrollWidth=390
+  overflow=False
+  compactFrameCount=2
+  X5:
+    height=320
+    embed=mild-x5
+    mode=x5-cam002-kalibr
+    topbarDisplay=none
+    toolbarDisplay=none
+    inspectorDisplay=none
+    coordinateNoteDisplay=none
+    canvasWidth=314
+    canvasHeight=318
+    visibleMatchedTexts=[]
+  Insight9:
+    height=320
+    embed=mild-insight9
+    mode=insight9
+    topbarDisplay=none
+    toolbarDisplay=none
+    inspectorDisplay=none
+    coordinateNoteDisplay=none
+    canvasWidth=314
+    canvasHeight=318
+    visibleMatchedTexts=[]
+
+Headless Chrome CDP at 1366px:
+  scrollWidth=1351
+  overflow=False
+  compactFrameCount=2
+  X5 height=315, mode=x5-cam002-kalibr
+  Insight9 height=315, mode=insight9
+  both frames hide topbar/toolbar/inspector/coordinate note
+
+node --check static/js/site.js: pass
+node --check visualizations/hand-eye/app.js: pass
+git diff --check: pass
+```
+
+Commands run:
+
+```bash
+/home/zjj/.cache/agibot/live_shared_memory/team_deep_preflight.sh nova >/tmp/nova_preflight_insight9_handeye_embed_20260723.log && tail -n 30 /tmp/nova_preflight_insight9_handeye_embed_20260723.log
+git status --short --branch
+systemctl --user is-active mild-onedrive-rosbag-upload-20260719.service
+nl -ba index.html | sed -n '226,246p'
+nl -ba visualizations/hand-eye/app.js | sed -n '20,50p'
+nl -ba visualizations/hand-eye/styles.css | sed -n '60,90p'
+sed -n '95,170p' visualizations/hand-eye/data/handeye_devices.json
+nl -ba static/css/site.css | sed -n '431,462p'
+nl -ba visualizations/hand-eye/index.html | sed -n '1,105p'
+rg -n "site.css\\?v=|app.js\\?v=|styles.css\\?v=|mild-insight9|mild-x5|handeye-viewer-frame" index.html visualizations/hand-eye/index.html visualizations/hand-eye/app.js visualizations/hand-eye/styles.css
+node --check static/js/site.js
+node --check visualizations/hand-eye/app.js
+git diff --check
+node - <<'NODE'
+# Static assertion for Insight9 compact iframe, forced embed mode, cache
+# busters, and hidden chrome CSS.
+NODE
+node - <<'NODE'
+# Headless Chrome CDP assertions for mobile/desktop compact X5 and Insight9
+# iframes: ready state, embed/mode, hidden chrome, canvas dimensions, no visible
+# standalone viewer labels, and no horizontal overflow.
+NODE
+date '+%Y-%m-%d %H:%M %Z'
+```
+
 ### Tool Operation 243 - Compact X5 calibration download layout
 
 - Timestamp: 2026-07-22 23:11 CST
