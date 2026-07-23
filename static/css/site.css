@@ -450,6 +450,17 @@ h2 {
   height: clamp(300px, 35vh, 420px);
 }
 
+.sensor-frame-label {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  margin: 0 0 6px;
+  color: var(--ink);
+  font-size: 0.78rem;
+  font-weight: 860;
+  letter-spacing: 0;
+}
+
 .handeye-caption {
   grid-area: auto;
   margin: 7px 0 0;

@@ -1824,6 +1824,99 @@ git status --short --branch
 date '+%Y-%m-%d %H:%M %Z'
 ```
 
+### Tool Operation 245 - Neutral sensor-frame viewer labels
+
+- Timestamp: 2026-07-23 11:10 CST
+- Alias: nova
+- Tool: `apply_patch`, `node`, headless Chrome CDP DOM/layout checks
+- Reason: Add a user-facing label for each compact sensor-frame visualization
+  without exposing hand-eye wording, specific X5 Cam002 pose-chain details, or
+  internal transform identifiers.
+- Expected affected paths:
+  - `index.html`
+  - `static/css/site.css`
+  - `COMMAND_LOG_mild_site.md`
+- Safety notes:
+  - No `view_image` or screenshot/image inspection.
+  - The background OneDrive rosbag uploader service was not stopped, restarted,
+    or modified.
+  - Viewer data files, OneDrive links, and transform data were not changed.
+  - Unrelated dirty files were left untouched.
+- Exit status: success.
+
+Evidence:
+
+```text
+Visible label added above both compact viewers:
+  Sensor-frame distribution at the end effector
+
+Visible caption under both compact viewers:
+  Coordinate axes show camera and IMU frames relative to the robot end effector.
+
+Removed from visible compact-viewer text:
+  T_EE_Sensor
+  X5 Cam002 pose chain
+  Insight9 left-gray pose chain
+```
+
+Validation:
+
+```text
+Static checks:
+  label_count=2
+  neutral_caption_count=2
+  label_css_present=True
+  no_visible_t_ee_sensor=True
+  no_visible_x5_cam002_pose=True
+  no_visible_left_gray_pose_chain=True
+
+Headless Chrome CDP at 390px:
+  width=390
+  scrollWidth=390
+  overflow=False
+  labelCount=2
+  captionCount=2
+  labels fit within x=[37,353], width=316
+  captions fit within x=[37,353], width=316
+  compact frames fit within x=[37,353], height=320
+
+Headless Chrome CDP at 1366px:
+  width=1366
+  scrollWidth=1351
+  overflow=False
+  labelCount=2
+  captionCount=2
+  labels fit within x=[105,423], width=318
+  captions fit within x=[105,1247], width=1142
+  compact frames fit within x=[105,1247], height=315
+
+node --check static/js/site.js: pass
+node --check visualizations/hand-eye/app.js: pass
+git diff --check: pass
+```
+
+Commands run:
+
+```bash
+/home/zjj/.cache/agibot/live_shared_memory/team_deep_preflight.sh nova >/tmp/nova_preflight_sensor_frame_labels_20260723.log && tail -n 20 /tmp/nova_preflight_sensor_frame_labels_20260723.log
+git status --short --branch
+nl -ba index.html | sed -n '148,244p'
+nl -ba static/css/site.css | sed -n '431,466p'
+systemctl --user is-active mild-onedrive-rosbag-upload-20260719.service
+node --check static/js/site.js
+node --check visualizations/hand-eye/app.js
+git diff --check
+node - <<'NODE'
+# Static assertion for neutral labels/captions and absence of internal visible
+# wording.
+NODE
+node - <<'NODE'
+# Headless Chrome CDP assertions for mobile/desktop label/caption/frame bboxes,
+# scrollWidth/clientWidth overflow, and text fit.
+NODE
+date '+%Y-%m-%d %H:%M %Z'
+```
+
 ### Tool Operation 244 - Compact Insight9 hand-eye embed
 
 - Timestamp: 2026-07-23 10:53 CST
