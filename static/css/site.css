@@ -510,6 +510,17 @@ h2 {
   grid-column: 2;
 }
 
+.calibration-links-insight9 {
+  grid-template-columns: minmax(0, 1.22fr) minmax(0, 0.68fr) minmax(0, 0.9fr);
+}
+
+.calibration-links-compact.calibration-links-insight9 .calibration-group:nth-child(1),
+.calibration-links-compact.calibration-links-insight9 .calibration-group:nth-child(2),
+.calibration-links-compact.calibration-links-insight9 .calibration-group:nth-child(3) {
+  grid-column: auto;
+  grid-row: auto;
+}
+
 .calibration-links-compact .calibration-group > span {
   font-size: 0.72rem;
 }
@@ -1455,6 +1466,10 @@ code {
   .variant-grid,
   .task-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sensor-grid {
+    grid-template-columns: 1fr;
   }
 
   .split,

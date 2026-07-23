@@ -3029,3 +3029,125 @@ Validation:
   node --check visualizations/hand-eye/app.js: pass
   git diff --check: pass
 ```
+
+### Tool Operation 244 - Compact Insight9 calibration downloads
+
+- Timestamp: 2026-07-23 12:54 CST
+- Alias: nova
+- Tool: `apply_patch`, `node`, headless Chrome CDP DOM/layout checks
+- Reason: Remove the large blank area in the "Depth and geometry support"
+  calibration download layout. The prior compact layout was designed for X5:
+  its first group spans two grid rows, which leaves visible empty space under
+  Insight9 Intrinsics because Insight9 has only short download groups.
+- Expected affected paths:
+  - `index.html`
+  - `static/css/site.css`
+  - `COMMAND_LOG_mild_site.md`
+- Safety notes:
+  - No `view_image` call and no screenshot/image inspection.
+  - No rosbag/video/TUM/config data or OneDrive links were modified.
+  - The OneDrive rosbag upload service was checked for active status only; it
+    was not stopped, restarted, or modified.
+  - Unrelated dirty files were left unstaged and untouched.
+- Exit status: success.
+
+Commands run:
+
+```bash
+/home/zjj/.cache/agibot/live_shared_memory/team_deep_preflight.sh nova
+git status --short --branch
+systemctl --user is-active mild-onedrive-rosbag-upload-20260719.service
+nl -ba index.html | sed -n '220,286p'
+rg -n "calibration-links|calibration-group|calibration-row|sensor-downloads|sensor-grid|sensor-card" static/css/site.css
+nl -ba static/css/site.css | sed -n '300,430p'
+nl -ba static/css/site.css | sed -n '430,540p'
+nl -ba static/css/site.css | sed -n '540,670p'
+nl -ba static/css/site.css | sed -n '1360,1492p'
+nl -ba static/css/site.css | sed -n '1530,1590p'
+python3 -m http.server 8795 --bind 127.0.0.1
+node - <<'NODE'
+# Baseline no-screenshot CDP measurement for Insight9 download group bboxes.
+NODE
+nl -ba index.html | sed -n '1,35p'
+rg -n "site.css\\?v=|calibration-links-insight9" index.html static/css/site.css
+node --check static/js/site.js
+node --check visualizations/hand-eye/app.js
+git diff --check
+node - <<'NODE'
+# Static assertion for CSS cache bump, Insight9-only class, Release text, and
+# X5 compact span rule preservation.
+NODE
+node - <<'NODE'
+# First post-change no-screenshot CDP measurement. It showed the desktop fix
+# worked, but 820px overflowed because the existing 980px media rule placed
+# two sensor cards side-by-side.
+NODE
+node - <<'NODE'
+# Final no-screenshot CDP measurement at desktop 1366px, tablet 820px, and
+# mobile 390px after making sensor-grid single-column below 980px.
+NODE
+date '+%Y-%m-%d %H:%M %Z'
+git diff -- index.html static/css/site.css
+tail -n 120 COMMAND_LOG_mild_site.md
+```
+
+Evidence:
+
+```text
+Baseline before layout change:
+  desktop 1366px:
+    Insight9 downloads height=192
+    Intrinsics group height=73
+    blank below Intrinsics to grid bottom=119
+    overflow=False
+  mobile 390px:
+    overflow=False
+
+Applied website diff:
+  index.html:
+    CSS cache key:
+      20260723-insight9-handeye-compact -> 20260723-insight9-downloads-compact
+    Insight9 Release copy:
+      static transforms -> camera-IMU extrinsics / hand-eye extrinsics
+    Insight9 downloads class:
+      + calibration-links-insight9
+  static/css/site.css:
+    Add Insight9-only three-column calibration layout:
+      minmax(0, 1.22fr) minmax(0, 0.68fr) minmax(0, 0.9fr)
+    Override the X5 compact nth-child row-span only for Insight9.
+    Keep sensor-grid single-column below 980px to avoid cramped medium-width
+    sensor cards.
+
+Static assertion:
+  stylesheet_cache_bumped=True
+  insight_class_present=True
+  release_text_updated=True
+  insight_static_transforms_absent=True
+  insight_css_three_columns=True
+  insight_css_overrides_compact_spans=True
+  x5_compact_span_rule_still_present=True
+
+Final headless Chrome CDP:
+  desktop 1366px:
+    page scrollWidth=1351
+    overflow=False
+    linksFit=True
+    Insight9 downloads height=111
+    blank below first group=1
+    Insight9 groups=Intrinsics | IMU parameters | Extrinsics
+  tablet 820px:
+    page scrollWidth=805
+    overflow=False
+    linksFit=True
+    Insight9 downloads width=701
+    Insight9 downloads height=146
+  mobile 390px:
+    page scrollWidth=390
+    overflow=False
+    linksFit=True
+
+Validation:
+  node --check static/js/site.js: pass
+  node --check visualizations/hand-eye/app.js: pass
+  git diff --check: pass
+```

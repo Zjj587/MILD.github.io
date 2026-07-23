@@ -21,7 +21,7 @@
     >
     <meta property="og:image" content="static/images/pic/scenes/apriltag4.jpg">
     <link rel="preload" href="static/images/pic/scenes/apriltag4.jpg" as="image">
-    <link rel="stylesheet" href="static/css/site.css?v=20260723-insight9-handeye-compact">
+    <link rel="stylesheet" href="static/css/site.css?v=20260723-insight9-downloads-compact">
   </head>
   <body>
     <header class="site-header">
@@ -230,7 +230,7 @@
               </p>
               <dl>
                 <dt>Signals</dt><dd>Left/right grayscale images, IMU, image timestamps, and optional RGB or depth records.</dd>
-                <dt>Release</dt><dd>Camera intrinsics, static transforms, IMU parameters, and audited capture metadata.</dd>
+                <dt>Release</dt><dd>Camera intrinsics, camera-IMU extrinsics, IMU parameters, and hand-eye extrinsics.</dd>
               </dl>
               <div class="handeye-embed" aria-label="Interactive Insight9 hand-eye calibration viewer">
                 <div class="sensor-frame-label">Sensor-frame distribution at the end effector</div>
@@ -241,7 +241,7 @@
                   loading="lazy"></iframe>
                 <p class="handeye-caption">Coordinate axes show camera and IMU frames relative to the robot end effector.</p>
               </div>
-              <div class="sensor-downloads calibration-links calibration-links-compact" aria-label="Insight9 calibration downloads">
+              <div class="sensor-downloads calibration-links calibration-links-compact calibration-links-insight9" aria-label="Insight9 calibration downloads">
                 <div class="calibration-group">
                   <span>Intrinsics</span>
                   <div class="calibration-row">
